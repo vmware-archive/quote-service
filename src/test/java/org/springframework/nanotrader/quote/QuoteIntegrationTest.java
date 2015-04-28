@@ -3,7 +3,6 @@ package org.springframework.nanotrader.quote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class QuoteIntegrationTest {
 
 	@Autowired
-	QuoteService quoteService;
+	QuoteController quoteService;
 
 	@Test
 	public void testCountAllQuotes() {
@@ -34,7 +34,7 @@ public class QuoteIntegrationTest {
 
 	@Test
 	public void testFindQuote() {
-		Quote obj = quoteService.findQuote(1);
+		Quote obj = quoteService.findQuote(1).getBody();
 		assertNotNull(
 				"Find method for 'Quote' illegally returned null for id '"
 						+ new Integer(1) + "'", obj);
@@ -80,12 +80,12 @@ public class QuoteIntegrationTest {
 
 	@Test
 	public void testUpdateQuote() {
-		Quote obj = quoteService.findQuote(12);
+		Quote obj = quoteService.findQuote(12).getBody();
 		String symbol = obj.getSymbol();
 		obj.setSymbol("FOO");
 		quoteService.updateQuote(obj);
 
-		obj = quoteService.findQuote(12);
+		obj = quoteService.findQuote(12).getBody();
 		assertEquals("FOO", obj.getSymbol());
 		assertFalse("Symbol should have changed.",
 				obj.getSymbol().equals(symbol));
@@ -93,15 +93,15 @@ public class QuoteIntegrationTest {
 
 	@Test
 	public void testDeleteQuote() {
-		Quote obj = quoteService.findQuote(2);
+		Quote obj = quoteService.findQuote(2).getBody();
 		quoteService.deleteQuote(obj);
-		assertNull("Failed to remove 'Quote' with identifier '" + 2 + "'",
-				quoteService.findQuote(2));
+		assertEquals("Failed to remove 'Quote' with identifier '" + 2 + "'", HttpStatus.NOT_FOUND,
+				quoteService.findQuote(2).getStatusCode());
 	}
 
 	@Test
 	public void testFindBySymbol() {
-		Quote obj = quoteService.findBySymbol("BRCM");
+		Quote obj = quoteService.findBySymbol("BRCM").getBody();
 		assertNotNull("Should find a result.", obj);
 	}
 

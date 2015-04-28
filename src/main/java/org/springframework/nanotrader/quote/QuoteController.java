@@ -20,15 +20,20 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/quoteService")
+@RequestMapping("/quote")
 @Transactional
-public class QuoteService {
+public class QuoteController {
 
 	@Autowired
 	QuoteRepository quoteRepository;
@@ -44,8 +49,12 @@ public class QuoteService {
 	}
 
 	@RequestMapping("/findQuote/{id}")
-	public Quote findQuote(@RequestParam Integer id) {
-		return quoteRepository.findOne(id);
+	public ResponseEntity<Quote> findQuote(@RequestParam Integer id) {
+		Quote quote = quoteRepository.findOne(id);
+		if(quote == null) {
+			return new ResponseEntity<Quote>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Quote>(quote, HttpStatus.OK);
 	}
 
 	@RequestMapping("/findAllQuotes")
@@ -69,14 +78,47 @@ public class QuoteService {
 	public Quote updateQuote(@RequestParam Quote quote) {
 		return quoteRepository.save(quote);
 	}
-	
+
 	@RequestMapping("/findBySymbol/{symbol}")
-	public Quote findBySymbol(@RequestParam String symbol) {
-		return quoteRepository.findBySymbol(symbol);
+	public ResponseEntity<Quote> findBySymbol(@RequestParam String symbol) {
+		Quote quote = quoteRepository.findBySymbol(symbol);
+		if(quote == null) {
+			return new ResponseEntity<Quote>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Quote>(quote, HttpStatus.OK);
 	}
 
 	@RequestMapping("/findBySymbolIn/{symbols}")
 	public List<Quote> findBySymbolIn(@RequestParam Set<String> symbols) {
 		return quoteRepository.findBySymbolIn(symbols);
-	}	
+	}
+
+	@RequestMapping(value = "/{symbol}", method = RequestMethod.GET)
+	public ResponseEntity<Quote> findQuote(@PathVariable("symbol") String symbol) {
+		return findBySymbol(symbol);
+	}
+
+	// @RequestMapping(value = "/quotes", method = RequestMethod.GET)
+	// @ResponseBody
+	// public CollectionResult findQuotes() {
+	// return getTradingServiceFacade().findQuotes();
+	// }
+
+	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+	public void post() {
+	}
+
+	@RequestMapping(value = "/{symbol}", method = RequestMethod.PUT)
+	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+	public void put() {
+
+	}
+
+	@RequestMapping(value = "/{symbol}", method = RequestMethod.DELETE)
+	@ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+	public void delete() {
+
+	}
+
 }
