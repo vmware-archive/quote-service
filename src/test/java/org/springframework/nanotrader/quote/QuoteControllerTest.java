@@ -1,86 +1,127 @@
-/*
- * Copyright 2002-2012 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.springframework.nanotrader.quote;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-/**
- * QuoteControllerTest tests the Quote REST api
- * 
- * @author Brian Dussault
- * @author
- */
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebIntegrationTest
+@Transactional
 public class QuoteControllerTest {
 
-	// Quote constants
-	public static Integer QUOTE_ID = 95;
-	public static String COMPANY_NAME = "VMware";
-	public static BigDecimal HIGH = BigDecimal.valueOf(161.18);
-	public static BigDecimal OPEN = BigDecimal.valueOf(159.18);
-	public static BigDecimal VOLUME = new BigDecimal("0.00");
-	public static BigDecimal CURRENT_PRICE = BigDecimal.valueOf(154.18);
-	public static BigDecimal CHANGE_1 = new BigDecimal("3.00");
-	public static BigDecimal LOW = BigDecimal.valueOf(145.18);
-	public static String SYMBOL = "VMW";
+	@Autowired
+	QuoteController quoteService;
 
 	@Test
-	public void getQuoteBySymbolJson() {
-		ResponseEntity<Quote> qe = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/quote/VMW", Quote.class);
-		assertTrue(qe.getStatusCode().equals(HttpStatus.OK));
-		assertNotNull(qe);
-		Quote quote = qe.getBody();
-		assertNotNull(quote);
-		assertEquals(CHANGE_1, quote.getChange1());
-		assertEquals(COMPANY_NAME, quote.getCompanyname());
-		assertEquals(HIGH, quote.getHigh());
-		assertEquals(LOW, quote.getLow());
-		assertEquals(OPEN, quote.getOpen1());
-		assertEquals(CURRENT_PRICE, quote.getPrice());
-		assertEquals(QUOTE_ID, quote.getQuoteid());
-		assertEquals(SYMBOL, quote.getSymbol());
-		assertEquals(VOLUME, quote.getVolume());
-
+	public void testCountAllQuotes() {
+		long count = quoteService.countAllQuotes();
+		assertTrue(
+				"Counter for 'Quote' incorrectly reported there were no entries",
+				count > 0);
 	}
 
 	@Test
-	public void getQuoteBySymbolNoRecordsFoundJson() {
-		ResponseEntity<Quote> quote = new TestRestTemplate().getForEntity(
-				"http://localhost:8080/quote/NOT_A_SYMBOL", Quote.class);
-		assertTrue(quote.getStatusCode().equals(HttpStatus.NOT_FOUND));
-		assertNull(quote.getBody());
-
+	public void testFindQuote() {
+		Quote obj = quoteService.findQuote(1);
+		assertNotNull(
+				"Find method for 'Quote' illegally returned null for id '"
+						+ new Integer(1) + "'", obj);
+		assertEquals(
+				"Find method for 'Quote' returned the incorrect identifier",
+				new Integer(1), obj.getQuoteid());
 	}
 
+	@Test
+	public void testFindAllQuotes() {
+		Iterable<Quote> result = quoteService.findAllQuotes();
+		assertNotNull("Find all method for 'Quote' illegally returned null",
+				result);
+	}
+
+	@Test
+	public void testFindQuoteEntries() {
+		long count = quoteService.countAllQuotes();
+		if (count > 20)
+			count = 20;
+		int firstResult = 0;
+		int maxResults = (int) count;
+		List<Quote> result = quoteService.findQuoteEntries(firstResult,
+				maxResults);
+		assertNotNull(
+				"Find entries method for 'Quote' illegally returned null",
+				result);
+		assertEquals(
+				"Find entries method for 'Quote' returned an incorrect number of entries",
+				count, result.size());
+	}
+
+	@Test
+	public void testSaveQuote() {
+		Quote obj = new Quote();
+		obj.setSymbol("BAZZ");
+		obj.setVolume(new BigDecimal(123));
+		obj.setChange1(new BigDecimal(234));
+		quoteService.saveQuote(obj);
+		assertNotNull("Expected 'Quote' identifier to no longer be null",
+				obj.getQuoteid());
+	}
+
+	@Test
+	public void testUpdateQuote() {
+		Quote obj = quoteService.findQuote(12);
+		String symbol = obj.getSymbol();
+		obj.setSymbol("FOO");
+		quoteService.updateQuote(obj);
+
+		obj = quoteService.findQuote(12);
+		assertEquals("FOO", obj.getSymbol());
+		assertFalse("Symbol should have changed.",
+				obj.getSymbol().equals(symbol));
+	}
+
+	@Test
+	public void testDeleteQuote() {
+		Quote obj = quoteService.findQuote(2);
+		assertNotNull(obj);
+		quoteService.deleteQuote(2);
+		obj = quoteService.findQuote(2);
+		assertNull(obj);
+	}
+
+	@Test
+	public void testFindBySymbol() {
+		Quote obj = quoteService.findBySymbol("BRCM");
+		assertNotNull("Should find a result.", obj);
+	}
+
+	@Test
+	public void testFindBySymbolIn() {
+		Set<String> s = new HashSet<String>();
+		s.add("BRCM");
+		s.add("EBAY");
+		List<Quote> res = quoteService.findBySymbolIn(s);
+		assertNotNull(res);
+		assertTrue("Should have two results.", res.size() == 2);
+	}
+
+	@Test
+	public void testFindByPage() {
+		List<Quote> resp = quoteService.findAll(3, 20);
+		assertNotNull(resp);
+		assertTrue(resp.size() == 20);
+	}
 }
