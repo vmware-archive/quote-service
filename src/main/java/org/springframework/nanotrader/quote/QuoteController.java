@@ -1,6 +1,8 @@
 package org.springframework.nanotrader.quote;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,4 +75,41 @@ public class QuoteController {
 				.getContent();
 	}
 
+	@RequestMapping("/indexAverage")
+	public Long indexAverage() {
+		return quoteRepository.findIndexAverage();
+	}
+
+	@RequestMapping("/openAverage")
+	public Long openAverage() {
+		return quoteRepository.findOpenAverage();
+	}
+
+	@RequestMapping("/volume")
+	public Long volume() {
+		return quoteRepository.findVolume();
+	}
+
+	@RequestMapping("/change")
+	public Long change() {
+		return quoteRepository.findChange();
+	}
+
+	@RequestMapping("/marketSummary")
+	public Map<String, Long> marketSummary() {
+		Map<String, Long> ms = new HashMap<String, Long>();
+		ms.put("tradeStockIndexAverage", indexAverage());
+		ms.put("tradeStockIndexOpenAverage", openAverage());
+		ms.put("tradeStockIndexVolume", volume());
+		ms.put("cnt", countAllQuotes());
+		ms.put("change", change());
+
+		return ms;
+	}
+	
+//	@ExceptionHandler(Exception.class)
+//	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+//	public String handleException(Exception e) {
+//	    return e.getMessage();
+//	}
 }

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -24,11 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuoteControllerTest {
 
 	@Autowired
-	QuoteController quoteService;
+	QuoteController quoteController;
 
 	@Test
 	public void testCountAllQuotes() {
-		long count = quoteService.countAllQuotes();
+		long count = quoteController.countAllQuotes();
 		assertTrue(
 				"Counter for 'Quote' incorrectly reported there were no entries",
 				count > 0);
@@ -36,7 +37,7 @@ public class QuoteControllerTest {
 
 	@Test
 	public void testFindQuote() {
-		Quote obj = quoteService.findQuote(1);
+		Quote obj = quoteController.findQuote(1);
 		assertNotNull(
 				"Find method for 'Quote' illegally returned null for id '"
 						+ new Integer(1) + "'", obj);
@@ -47,19 +48,19 @@ public class QuoteControllerTest {
 
 	@Test
 	public void testFindAllQuotes() {
-		Iterable<Quote> result = quoteService.findAllQuotes();
+		Iterable<Quote> result = quoteController.findAllQuotes();
 		assertNotNull("Find all method for 'Quote' illegally returned null",
 				result);
 	}
 
 	@Test
 	public void testFindQuoteEntries() {
-		long count = quoteService.countAllQuotes();
+		long count = quoteController.countAllQuotes();
 		if (count > 20)
 			count = 20;
 		int firstResult = 0;
 		int maxResults = (int) count;
-		List<Quote> result = quoteService.findQuoteEntries(firstResult,
+		List<Quote> result = quoteController.findQuoteEntries(firstResult,
 				maxResults);
 		assertNotNull(
 				"Find entries method for 'Quote' illegally returned null",
@@ -75,19 +76,19 @@ public class QuoteControllerTest {
 		obj.setSymbol("BAZZ");
 		obj.setVolume(new BigDecimal(123));
 		obj.setChange1(new BigDecimal(234));
-		quoteService.saveQuote(obj);
+		quoteController.saveQuote(obj);
 		assertNotNull("Expected 'Quote' identifier to no longer be null",
 				obj.getQuoteid());
 	}
 
 	@Test
 	public void testUpdateQuote() {
-		Quote obj = quoteService.findQuote(12);
+		Quote obj = quoteController.findQuote(12);
 		String symbol = obj.getSymbol();
 		obj.setSymbol("FOO");
-		quoteService.updateQuote(obj);
+		quoteController.updateQuote(obj);
 
-		obj = quoteService.findQuote(12);
+		obj = quoteController.findQuote(12);
 		assertEquals("FOO", obj.getSymbol());
 		assertFalse("Symbol should have changed.",
 				obj.getSymbol().equals(symbol));
@@ -95,16 +96,16 @@ public class QuoteControllerTest {
 
 	@Test
 	public void testDeleteQuote() {
-		Quote obj = quoteService.findQuote(2);
+		Quote obj = quoteController.findQuote(2);
 		assertNotNull(obj);
-		quoteService.deleteQuote(2);
-		obj = quoteService.findQuote(2);
+		quoteController.deleteQuote(2);
+		obj = quoteController.findQuote(2);
 		assertNull(obj);
 	}
 
 	@Test
 	public void testFindBySymbol() {
-		Quote obj = quoteService.findBySymbol("BRCM");
+		Quote obj = quoteController.findBySymbol("BRCM");
 		assertNotNull("Should find a result.", obj);
 	}
 
@@ -113,15 +114,48 @@ public class QuoteControllerTest {
 		Set<String> s = new HashSet<String>();
 		s.add("BRCM");
 		s.add("EBAY");
-		List<Quote> res = quoteService.findBySymbolIn(s);
+		List<Quote> res = quoteController.findBySymbolIn(s);
 		assertNotNull(res);
 		assertTrue("Should have two results.", res.size() == 2);
 	}
 
 	@Test
 	public void testFindByPage() {
-		List<Quote> resp = quoteService.findAll(3, 20);
+		List<Quote> resp = quoteController.findAll(3, 20);
 		assertNotNull(resp);
 		assertTrue(resp.size() == 20);
+	}
+	
+	@Test
+	public void testFindIndexAverage() {
+		Long l = quoteController.indexAverage();
+		assertNotNull(l);
+		assertEquals(107, l.longValue());
+	}
+	
+	@Test
+	public void testFindOpenAverage() {
+		Long l = quoteController.openAverage();
+		assertNotNull(l);
+		assertEquals(104, l.longValue());
+	}
+	
+	@Test
+	public void testFindVolume() {
+		assertTrue(458 == quoteController.volume());
+	}
+	
+	@Test
+	public void testFindChange() {
+		Long l = quoteController.change();
+		assertNotNull(l);
+		assertEquals(928, l.longValue());
+	}
+	
+	@Test
+	public void testMarketSummary() {
+		Map<String, Long> m = quoteController.marketSummary();
+		assertNotNull(m);
+		assertTrue(m.size() == 5);
 	}
 }
