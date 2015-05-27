@@ -95,6 +95,18 @@ public class QuoteController {
 		return quoteRepository.findChange();
 	}
 
+	@RequestMapping("/topGainers")
+	public List<Quote> topGainers() {
+		return quoteRepository
+				.findAllByOrderByChange1Desc(new PageRequest(0, 3));
+	}
+
+	@RequestMapping("/topLosers")
+	public List<Quote> topLosers() {
+		return quoteRepository
+				.findAllByOrderByChange1Asc(new PageRequest(0, 3));
+	}
+
 	@RequestMapping("/marketSummary")
 	public Map<String, Long> marketSummary() {
 		Map<String, Long> ms = new HashMap<String, Long>();
@@ -106,10 +118,10 @@ public class QuoteController {
 
 		return ms;
 	}
-	
-//	@ExceptionHandler(Exception.class)
-//	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//	public String handleException(Exception e) {
-//	    return e.getMessage();
-//	}
+
+	// @ExceptionHandler(Exception.class)
+	// @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	// public String handleException(Exception e) {
+	// return e.getMessage();
+	// }
 }

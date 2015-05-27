@@ -125,37 +125,57 @@ public class QuoteControllerTest {
 		assertNotNull(resp);
 		assertTrue(resp.size() == 20);
 	}
-	
+
 	@Test
 	public void testFindIndexAverage() {
 		Long l = quoteController.indexAverage();
 		assertNotNull(l);
 		assertEquals(107, l.longValue());
 	}
-	
+
 	@Test
 	public void testFindOpenAverage() {
 		Long l = quoteController.openAverage();
 		assertNotNull(l);
 		assertEquals(104, l.longValue());
 	}
-	
+
 	@Test
 	public void testFindVolume() {
 		assertTrue(458 == quoteController.volume());
 	}
-	
+
 	@Test
 	public void testFindChange() {
 		Long l = quoteController.change();
 		assertNotNull(l);
-		assertEquals(928, l.longValue());
+		assertEquals(1042, l.longValue());
 	}
-	
+
 	@Test
 	public void testMarketSummary() {
 		Map<String, Long> m = quoteController.marketSummary();
 		assertNotNull(m);
 		assertTrue(m.size() == 5);
+	}
+
+	@Test
+	public void testLosers() {
+		List<Quote> q = quoteController.topLosers();
+		assertNotNull(q);
+		assertEquals(3, q.size());
+		assertEquals("ATVI", q.get(0).getSymbol());
+		assertEquals("CHKP", q.get(1).getSymbol());
+		assertEquals("EA", q.get(2).getSymbol());
+	}
+
+	@Test
+	public void testGainers() {
+		List<Quote> q = quoteController.topGainers();
+		assertNotNull(q);
+		assertEquals(3, q.size());
+		assertEquals("AAPL", q.get(0).getSymbol());
+		assertEquals("CSCO", q.get(1).getSymbol());
+		assertEquals("DLTR", q.get(2).getSymbol());
 	}
 }
