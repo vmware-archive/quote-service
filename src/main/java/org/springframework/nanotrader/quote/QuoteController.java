@@ -26,13 +26,8 @@ public class QuoteController {
 		return quoteRepository.count();
 	}
 
-	@RequestMapping("/delete/{id}")
-	public void deleteQuote(@PathVariable int id) {
-		quoteRepository.delete(id);
-	}
-
 	@RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
-	public Quote findQuote(@PathVariable int id) {
+	public Quote findQuote(@PathVariable Integer id) {
 		return quoteRepository.findOne(id);
 	}
 
@@ -52,6 +47,11 @@ public class QuoteController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public Quote saveQuote(@RequestBody Quote quote) {
 		return quoteRepository.save(quote);
+	}
+	
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public void deleteQuote(@RequestBody Quote quote) {
+		quoteRepository.delete(quote);
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
@@ -119,9 +119,14 @@ public class QuoteController {
 		return ms;
 	}
 
-	// @ExceptionHandler(Exception.class)
-	// @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	// public String handleException(Exception e) {
-	// return e.getMessage();
-	// }
+//	@ExceptionHandler(Exception.class)
+//	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+//	public String handleException(Exception e) {
+//		return e.getMessage();
+//	}
+	
+//	@ExceptionHandler(IllegalArgumentException.class)
+//	void handleBadRequests(HttpServletResponse response) throws IOException {
+//	    response.sendError(HttpStatus.BAD_REQUEST.value(), "Please try again and with a non empty string as 'name'");
+//	}
 }

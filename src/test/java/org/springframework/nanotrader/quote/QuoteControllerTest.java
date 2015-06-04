@@ -16,24 +16,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@Transactional
+@WebIntegrationTest({"server.port=0", "management.port=0"})
 public class QuoteControllerTest {
+	
+	private static final String BASE_URI = "http://localhost:8080/quoteService";
 
 	@Autowired
 	QuoteController quoteController;
 
-	@Test
-	public void testCountAllQuotes() {
-		long count = quoteController.countAllQuotes();
-		assertTrue(
-				"Counter for 'Quote' incorrectly reported there were no entries",
-				count > 0);
-	}
+	TestRestTemplate restTemplate = new TestRestTemplate();
 
 	@Test
 	public void testFindQuote() {
@@ -98,7 +97,7 @@ public class QuoteControllerTest {
 	public void testDeleteQuote() {
 		Quote obj = quoteController.findQuote(2);
 		assertNotNull(obj);
-		quoteController.deleteQuote(2);
+		quoteController.deleteQuote(obj);
 		obj = quoteController.findQuote(2);
 		assertNull(obj);
 	}
@@ -142,14 +141,14 @@ public class QuoteControllerTest {
 
 	@Test
 	public void testFindVolume() {
-		assertTrue(458 == quoteController.volume());
+		assertEquals(new Long(453), quoteController.volume());
 	}
 
 	@Test
 	public void testFindChange() {
 		Long l = quoteController.change();
 		assertNotNull(l);
-		assertEquals(1042, l.longValue());
+		assertEquals(1035, l.longValue());
 	}
 
 	@Test
@@ -177,5 +176,30 @@ public class QuoteControllerTest {
 		assertEquals("AAPL", q.get(0).getSymbol());
 		assertEquals("CSCO", q.get(1).getSymbol());
 		assertEquals("DLTR", q.get(2).getSymbol());
+	}
+	
+	@Test
+	public void testCountAllQuotes() {
+		long count = quoteController.countAllQuotes();
+		assertTrue(
+				"Counter for 'Quote' incorrectly reported there were no entries",
+				count > 0);
+	}
+	
+	@Test
+	public void testResponseFndById() throws Exception {
+		ResponseEntity<Quote> qr = restTemplate.getForEntity(BASE_URI + "/findById/5", Quote.class);
+		assertNotNull(qr);
+		assertEquals(HttpStatus.OK, qr.getStatusCode());
+		Quote q = qr.getBody();
+		assertEquals(new Integer(5), q.getQuoteid());
+		
+		qr = restTemplate.getForEntity(BASE_URI + "/findById/abc", Quote.class);
+		assertNotNull(qr);
+		assertEquals(HttpStatus.BAD_REQUEST, qr.getStatusCode());
+		
+		qr = restTemplate.getForEntity(BASE_URI + "/findById/", Quote.class);
+		assertNotNull(qr);
+		assertEquals(HttpStatus.NOT_FOUND, qr.getStatusCode());
 	}
 }
