@@ -24,10 +24,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
-@WebIntegrationTest({"server.port=0", "management.port=0"})
+@WebIntegrationTest(value = "server.port=9876")
 public class QuoteControllerTest {
 	
-	private static final String BASE_URI = "http://localhost:8080/quoteService";
+	private static final String BASE_URI = "http://localhost:9876/quoteService";
 
 	@Autowired
 	QuoteController quoteController;
