@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: quote-service
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://jg-eureka-server.cfapps.io/eureka/
+  instance:
+    hostName: ${vcap.application.uris[0]}
+    nonSecurePort: 80
+    metadataMap:
+      instanceId: ${vcap.application.instance_id:${spring.application.name}:${spring.application.instance_id:${server.port}}}
