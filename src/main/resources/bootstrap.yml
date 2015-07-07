@@ -1,11 +1,20 @@
 spring:
   application:
     name: quote-service
-
+    
+eureka:
+  instance:
+    hostName: localhost
+    nonSecurePort: 80
+    metadataMap:
+      instanceId: ${spring.application.name}
+---
+spring:
+    profiles: cloud
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://jg-eureka-server.cfapps.io/eureka/
+      defaultZone: ${EUREKA_SERVER}
   instance:
     hostName: ${vcap.application.uris[0]}
     nonSecurePort: 80

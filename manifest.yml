@@ -6,4 +6,5 @@ applications:
   path: target/quote-service-0.1.0.jar
   env:
     SPRING_PROFILES_ACTIVE: cloud
+    EUREKA_SERVER: http://jg-eureka-server.cfapps.io/eureka/
 

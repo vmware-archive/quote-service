@@ -20,13 +20,15 @@ import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
 @WebIntegrationTest(value = "server.port=9876")
+@ActiveProfiles("test")
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = { Application.class })
 public class QuoteControllerTest {
-	
+
 	private static final String BASE_URI = "http://localhost:9876/quoteService";
 
 	@Autowired
@@ -177,7 +179,7 @@ public class QuoteControllerTest {
 		assertEquals("CSCO", q.get(1).getSymbol());
 		assertEquals("DLTR", q.get(2).getSymbol());
 	}
-	
+
 	@Test
 	public void testCountAllQuotes() {
 		long count = quoteController.countAllQuotes();
@@ -185,19 +187,20 @@ public class QuoteControllerTest {
 				"Counter for 'Quote' incorrectly reported there were no entries",
 				count > 0);
 	}
-	
+
 	@Test
 	public void testResponseFndById() throws Exception {
-		ResponseEntity<Quote> qr = restTemplate.getForEntity(BASE_URI + "/findById/5", Quote.class);
+		ResponseEntity<Quote> qr = restTemplate.getForEntity(BASE_URI
+				+ "/findById/5", Quote.class);
 		assertNotNull(qr);
 		assertEquals(HttpStatus.OK, qr.getStatusCode());
 		Quote q = qr.getBody();
 		assertEquals(new Integer(5), q.getQuoteid());
-		
+
 		qr = restTemplate.getForEntity(BASE_URI + "/findById/abc", Quote.class);
 		assertNotNull(qr);
 		assertEquals(HttpStatus.BAD_REQUEST, qr.getStatusCode());
-		
+
 		qr = restTemplate.getForEntity(BASE_URI + "/findById/", Quote.class);
 		assertNotNull(qr);
 		assertEquals(HttpStatus.NOT_FOUND, qr.getStatusCode());
