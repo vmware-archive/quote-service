@@ -5,7 +5,7 @@ spring:
 eureka:
   instance:
     hostName: localhost
-    nonSecurePort: 80
+    nonSecurePort: 8080
     metadataMap:
       instanceId: ${spring.application.name}
 ---
