@@ -59,4 +59,17 @@ public class Symbols {
 	public int count() {
 		return getSymbols().size();
 	}
+
+	public Set<String> checkSymbols(Set<String> symbols) {
+		Set<String> ret = new HashSet<String>();
+		if (symbols == null || symbols.size() < 1) {
+			return ret;
+		}
+		for (String s : symbols) {
+			if (exists(s)) {
+				ret.add(s);
+			}
+		}
+		return ret;
+	}
 }

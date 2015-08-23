@@ -2,6 +2,7 @@ package org.springframework.nanotrader.quote;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -59,20 +60,37 @@ public class QuoteControllerTest {
 		assertTrue(obj.getBid() > 0);
 		assertTrue(obj.getPercentageChange() != "");
 		assertTrue(obj.getPreviousClose() > 0);
+
+		// non-existent symbols
+		assertNull(quoteController.findBySymbol(null));
+		assertNull(quoteController.findBySymbol(""));
+		assertNull(quoteController.findBySymbol("IBM"));
 	}
 
 	@Test
 	public void testFindBySymbolIn() {
 		Set<String> s = new HashSet<String>();
-		s.add("BRCM");
+		s.add("AMZN");
 		s.add("EBAY");
 		List<Quote> res = quoteController.findBySymbolIn(s);
 		assertNotNull(res);
 		assertTrue("Should have two results.", res.size() == 2);
-		assertTrue("BRCM".equals(res.get(0).getSymbol())
+		assertTrue("AMZN".equals(res.get(0).getSymbol())
 				|| "EBAY".equals(res.get(0).getSymbol()));
-		assertTrue("BRCM".equals(res.get(1).getSymbol())
+		assertTrue("AMZN".equals(res.get(1).getSymbol())
 				|| "EBAY".equals(res.get(1).getSymbol()));
+
+		s.add(null);
+		res = quoteController.findBySymbolIn(s);
+		assertTrue("Should have two results.", res.size() == 2);
+
+		s.add("");
+		res = quoteController.findBySymbolIn(s);
+		assertTrue("Should have two results.", res.size() == 2);
+
+		s.add("IBM");
+		res = quoteController.findBySymbolIn(s);
+		assertTrue("Should have two results.", res.size() == 2);
 	}
 
 	@Test
@@ -167,11 +185,13 @@ public class QuoteControllerTest {
 		Quote q = qr.getBody();
 		assertEquals("GOOG", q.getSymbol());
 
-		qr = restTemplate.getForEntity(BASE_URI + "/findBySymbol/abc", Quote.class);
+		qr = restTemplate.getForEntity(BASE_URI + "/findBySymbol/abc",
+				Quote.class);
 		assertNotNull(qr);
 		assertEquals(HttpStatus.NOT_FOUND, qr.getStatusCode());
 
-		qr = restTemplate.getForEntity(BASE_URI + "/findBySymbol/", Quote.class);
+		qr = restTemplate
+				.getForEntity(BASE_URI + "/findBySymbol/", Quote.class);
 		assertNotNull(qr);
 		assertEquals(HttpStatus.BAD_REQUEST, qr.getStatusCode());
 	}

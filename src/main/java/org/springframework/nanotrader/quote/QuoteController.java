@@ -24,26 +24,30 @@ public class QuoteController {
 
 	@RequestMapping("/findBySymbol/{symbol}")
 	public Quote findBySymbol(@PathVariable String symbol) {
-		return quoteRepository
-				.findBySymbol("select * from yahoo.finance.quotes where symbol = '"
-						+ symbol + "'");
+		if (symbols.exists(symbol)) {
+			return quoteRepository
+					.findBySymbol("select * from yahoo.finance.quotes where symbol = '"
+							+ symbol + "'");
+		}
+		return null;
 	}
 
-	@RequestMapping("/findBySymbolIn")
-	public List<Quote> findBySymbolIn(@RequestParam Set<String> symbols) {
-		if (symbols == null || symbols.size() < 1) {
+	@RequestMapping("/findBySymbolIn/{set}")
+	public List<Quote> findBySymbolIn(@RequestParam Set<String> set) {
+		Set<String> s = symbols.checkSymbols(set);
+		if (s.size() < 1) {
 			return new ArrayList<Quote>();
 		}
 
-		if (symbols.size() < 2) {
+		if (s.size() < 2) {
 			List<Quote> l = new ArrayList<Quote>();
-			l.add(findBySymbol(symbols.toArray()[0].toString()));
+			l.add(findBySymbol(set.toArray()[0].toString()));
 			return l;
 		}
 
 		return quoteRepository
 				.findBySymbolIn("select * from yahoo.finance.quotes where symbol in "
-						+ QuoteDecoder.formatSymbols(symbols));
+						+ QuoteDecoder.formatSymbols(s));
 	}
 
 	@RequestMapping("/count")
