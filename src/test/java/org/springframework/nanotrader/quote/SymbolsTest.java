@@ -25,7 +25,7 @@ public class SymbolsTest {
 
 	@Test
 	public void testSymbols() {
-		assertEquals(22, symbols.count());
+		assertEquals(23, symbols.count());
 	}
 
 	@Test

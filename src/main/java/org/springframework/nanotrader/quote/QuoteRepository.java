@@ -14,14 +14,8 @@ import feign.RequestLine;
 public interface QuoteRepository {
 
 	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-	public Quote findBySymbol(@Param("query") String query);
+	public Quote getQuote(@Param("query") String query);
 
 	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-	List<Quote> findBySymbolIn(@Param("query") String query);
-
-	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-	Quote findQuote(@Param("query") String query);
-
-	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-	List<Quote> findQuotes(@Param("query") String query);
+	List<Quote> getQuotes(@Param("query") String query);
 }

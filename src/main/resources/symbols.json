@@ -64,5 +64,8 @@
 },
 {
 "Symbol": "YHOO"
+},
+{
+"Symbol": "^GSPC"
 }
 ]

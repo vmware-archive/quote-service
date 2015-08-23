@@ -160,13 +160,13 @@ public class QuoteControllerTest {
 
 	@Test
 	public void testCountAllQuotes() {
-		assertEquals("22", "" + quoteController.countAllQuotes());
+		assertEquals("23", "" + quoteController.countAllQuotes());
 	}
 
 	@Test
 	public void testFindAll() {
 		List<Quote> all = quoteController.findAll();
-		assertEquals("22", "" + all.size());
+		assertEquals("23", "" + all.size());
 		Quote q = all.get(0);
 		assertNotNull(q);
 		assertEquals(q.getSymbol(), "AAPL");

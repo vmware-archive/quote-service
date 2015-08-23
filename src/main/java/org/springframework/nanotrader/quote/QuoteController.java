@@ -26,7 +26,7 @@ public class QuoteController {
 	public Quote findBySymbol(@PathVariable String symbol) {
 		if (symbols.exists(symbol)) {
 			return quoteRepository
-					.findBySymbol("select * from yahoo.finance.quotes where symbol = '"
+					.getQuote("select * from yahoo.finance.quotes where symbol = '"
 							+ symbol + "'");
 		}
 		return null;
@@ -46,7 +46,7 @@ public class QuoteController {
 		}
 
 		return quoteRepository
-				.findBySymbolIn("select * from yahoo.finance.quotes where symbol in "
+				.getQuotes("select * from yahoo.finance.quotes where symbol in "
 						+ QuoteDecoder.formatSymbols(s));
 	}
 
@@ -71,8 +71,7 @@ public class QuoteController {
 	}
 
 	private Quote getSPIndexInfo() {
-		return quoteRepository
-				.findQuote("select * from yahoo.finance.quotes where symbol in (\"^GSPC\")");
+		return findBySymbol("^GSPC");
 	}
 
 	@RequestMapping("/change")
@@ -85,7 +84,7 @@ public class QuoteController {
 		String s = "select * from yahoo.finance.quotes where symbol in "
 				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
 				+ " | sort(field=\"Change\", descending=\"true\") | truncate(count=3)";
-		return quoteRepository.findQuotes(s);
+		return quoteRepository.getQuotes(s);
 	}
 
 	@RequestMapping("/topLosers")
@@ -93,7 +92,7 @@ public class QuoteController {
 		String s = "select * from yahoo.finance.quotes where symbol in "
 				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
 				+ " | sort(field=\"Change\", descending=\"false\") | truncate(count=3)";
-		return quoteRepository.findQuotes(s);
+		return quoteRepository.getQuotes(s);
 	}
 
 	@RequestMapping("/marketSummary")
@@ -113,6 +112,6 @@ public class QuoteController {
 		String s = "select * from yahoo.finance.quotes where symbol in "
 				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
 				+ " | sort(field=\"Symbol\", descending=\"false\")";
-		return quoteRepository.findQuotes(s);
+		return quoteRepository.getQuotes(s);
 	}
 }
