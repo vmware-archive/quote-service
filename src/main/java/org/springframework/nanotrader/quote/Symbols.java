@@ -4,11 +4,11 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -16,33 +16,47 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class QuoteRepositoryPopulator implements
-		ApplicationListener<ContextRefreshedEvent> {
+public class Symbols {
+
+	private Set<String> symbols;
 
 	@Autowired
-	QuoteRepository quoteRepository;
+	QuoteController quoteController;
 
-	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (quoteRepository != null && quoteRepository.count() == 0) {
-			populate(quoteRepository);
+	public Set<String> getSymbols() {
+		if (symbols != null) {
+			return symbols;
 		}
-	}
 
-	public void populate(QuoteRepository repository) {
 		try {
-			URI u = new ClassPathResource("quotes.json").getURI();
+			URI u = new ClassPathResource("symbols.json").getURI();
 			byte[] jsonData = Files.readAllBytes(Paths.get(u));
 
 			ObjectMapper objectMapper = new ObjectMapper();
-			ArrayList<Quote> q = objectMapper.readValue(jsonData,
+			ArrayList<Quote> quotes = objectMapper.readValue(jsonData,
 					new TypeReference<List<Quote>>() {
 					});
-			repository.save(q);
+
+			symbols = new HashSet<String>();
+			for (Quote quote : quotes) {
+				symbols.add(quote.getSymbol());
+			}
+
+			return symbols;
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
+	public boolean exists(String symbol) {
+		if (symbol == null) {
+			return false;
+		}
+		return getSymbols().contains(symbol);
+	}
+
+	public int count() {
+		return getSymbols().size();
+	}
 }

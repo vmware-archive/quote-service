@@ -1,16 +1,14 @@
 package org.springframework.nanotrader.quote;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,95 +19,82 @@ public class QuoteController {
 	@Autowired
 	QuoteRepository quoteRepository;
 
-	@RequestMapping("/count")
-	public long countAllQuotes() {
-		return quoteRepository.count();
-	}
-
-	@RequestMapping(value = "/findById/{id}", method = RequestMethod.GET)
-	public Quote findQuote(@PathVariable Integer id) {
-		return quoteRepository.findOne(id);
-	}
-
-	@RequestMapping("/findAll")
-	public Iterable<Quote> findAllQuotes() {
-		return quoteRepository.findAll();
-	}
-
-	@RequestMapping("/findQuoteEntries")
-	public List<Quote> findQuoteEntries(@RequestParam int firstResult,
-			@RequestParam int maxResults) {
-		return quoteRepository.findAll(
-				new PageRequest(firstResult / maxResults, maxResults))
-				.getContent();
-	}
-
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public Quote saveQuote(@RequestBody Quote quote) {
-		return quoteRepository.save(quote);
-	}
-	
-	@RequestMapping(value = "/delete", method = RequestMethod.POST)
-	public void deleteQuote(@RequestBody Quote quote) {
-		quoteRepository.delete(quote);
-	}
-
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public Quote updateQuote(@RequestBody Quote quote) {
-		return quoteRepository.save(quote);
-	}
+	@Autowired
+	Symbols symbols;
 
 	@RequestMapping("/findBySymbol/{symbol}")
 	public Quote findBySymbol(@PathVariable String symbol) {
-		return quoteRepository.findBySymbol(symbol);
+		return quoteRepository
+				.findBySymbol("select * from yahoo.finance.quotes where symbol = '"
+						+ symbol + "'");
 	}
 
 	@RequestMapping("/findBySymbolIn")
 	public List<Quote> findBySymbolIn(@RequestParam Set<String> symbols) {
-		return quoteRepository.findBySymbolIn(symbols);
+		if (symbols == null || symbols.size() < 1) {
+			return new ArrayList<Quote>();
+		}
+
+		if (symbols.size() < 2) {
+			List<Quote> l = new ArrayList<Quote>();
+			l.add(findBySymbol(symbols.toArray()[0].toString()));
+			return l;
+		}
+
+		return quoteRepository
+				.findBySymbolIn("select * from yahoo.finance.quotes where symbol in "
+						+ QuoteDecoder.formatSymbols(symbols));
 	}
 
-	@RequestMapping("/findAllPaged")
-	public List<Quote> findAll(@RequestParam int page, @RequestParam int size) {
-		return quoteRepository.findAll(new PageRequest(page, size))
-				.getContent();
+	@RequestMapping("/count")
+	public long countAllQuotes() {
+		return symbols.getSymbols().size();
 	}
 
 	@RequestMapping("/indexAverage")
-	public Long indexAverage() {
-		return quoteRepository.findIndexAverage();
+	public float indexAverage() {
+		return getSPIndexInfo().getPrice();
 	}
 
 	@RequestMapping("/openAverage")
-	public Long openAverage() {
-		return quoteRepository.findOpenAverage();
+	public float openAverage() {
+		return getSPIndexInfo().getOpen();
 	}
 
 	@RequestMapping("/volume")
-	public Long volume() {
-		return quoteRepository.findVolume();
+	public long volume() {
+		return getSPIndexInfo().getVolume();
+	}
+
+	private Quote getSPIndexInfo() {
+		return quoteRepository
+				.findQuote("select * from yahoo.finance.quotes where symbol in (\"^GSPC\")");
 	}
 
 	@RequestMapping("/change")
-	public Long change() {
-		return quoteRepository.findChange();
+	public float change() {
+		return getSPIndexInfo().getChange();
 	}
 
 	@RequestMapping("/topGainers")
 	public List<Quote> topGainers() {
-		return quoteRepository
-				.findAllByOrderByChange1Desc(new PageRequest(0, 3));
+		String s = "select * from yahoo.finance.quotes where symbol in "
+				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
+				+ " | sort(field=\"Change\", descending=\"true\") | truncate(count=3)";
+		return quoteRepository.findQuotes(s);
 	}
 
 	@RequestMapping("/topLosers")
 	public List<Quote> topLosers() {
-		return quoteRepository
-				.findAllByOrderByChange1Asc(new PageRequest(0, 3));
+		String s = "select * from yahoo.finance.quotes where symbol in "
+				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
+				+ " | sort(field=\"Change\", descending=\"false\") | truncate(count=3)";
+		return quoteRepository.findQuotes(s);
 	}
 
 	@RequestMapping("/marketSummary")
-	public Map<String, Long> marketSummary() {
-		Map<String, Long> ms = new HashMap<String, Long>();
+	public Map<String, Object> marketSummary() {
+		Map<String, Object> ms = new HashMap<String, Object>();
 		ms.put("tradeStockIndexAverage", indexAverage());
 		ms.put("tradeStockIndexOpenAverage", openAverage());
 		ms.put("tradeStockIndexVolume", volume());
@@ -119,14 +104,11 @@ public class QuoteController {
 		return ms;
 	}
 
-//	@ExceptionHandler(Exception.class)
-//	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-//	public String handleException(Exception e) {
-//		return e.getMessage();
-//	}
-	
-//	@ExceptionHandler(IllegalArgumentException.class)
-//	void handleBadRequests(HttpServletResponse response) throws IOException {
-//	    response.sendError(HttpStatus.BAD_REQUEST.value(), "Please try again and with a non empty string as 'name'");
-//	}
+	@RequestMapping("/findAll")
+	public List<Quote> findAll() {
+		String s = "select * from yahoo.finance.quotes where symbol in "
+				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
+				+ " | sort(field=\"Symbol\", descending=\"false\")";
+		return quoteRepository.findQuotes(s);
+	}
 }

@@ -16,128 +16,154 @@
 package org.springframework.nanotrader.quote;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@SuppressWarnings("serial")
-@Entity
-@Table(name = "QUOTE")
 public class Quote implements Serializable {
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "quoteid")
-    private Integer quoteid;
+	private static final long serialVersionUID = 1L;
 
-	public Integer getQuoteid() {
-        return this.quoteid;
-    }
-
-	public void setQuoteid(Integer id) {
-        this.quoteid = id;
-    }
-
-	@Column(name = "low", precision = 14, scale = 2)
-    private BigDecimal low;
-
-	@Column(name = "open1", precision = 14, scale = 2)
-    private BigDecimal open1;
-
-	@Column(name = "volume")
-    @NotNull
-    private BigDecimal volume;
-
-	@Column(name = "price", precision = 14, scale = 2)
-    private BigDecimal price;
-
-	@Column(name = "high", precision = 14, scale = 2)
-    private BigDecimal high;
-
-	@Column(name = "companyname", length = 250)
-    private String companyname;
-
-	@Column(name = "symbol", length = 250, unique = true)
-    @NotNull
-    private String symbol;
-
-	@Column(name = "change1")
-    @NotNull
-    private BigDecimal change1;
-
-	public BigDecimal getLow() {
-        return low;
-    }
-
-	public void setLow(BigDecimal low) {
-        this.low = low;
-    }
-
-	public BigDecimal getOpen1() {
-        return open1;
-    }
-
-	public void setOpen1(BigDecimal open1) {
-        this.open1 = open1;
-    }
-
-	public BigDecimal getVolume() {
-        return volume;
-    }
-
-	public void setVolume(BigDecimal volume) {
-        this.volume = volume;
-    }
-
-	public BigDecimal getPrice() {
-        return price;
-    }
-
-	public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-	public BigDecimal getHigh() {
-        return high;
-    }
-
-	public void setHigh(BigDecimal high) {
-        this.high = high;
-    }
-
-	public String getCompanyname() {
-        return companyname;
-    }
-
-	public void setCompanyname(String companyname) {
-        this.companyname = companyname;
-    }
-
-	public String getSymbol() {
-        return symbol;
-    }
-
-	public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-	public BigDecimal getChange1() {
-        return change1;
-    }
-
-	public void setChange1(BigDecimal change1) {
-        this.change1 = change1;
-    }
+	private String created;
+	private float daysLow;
+	private float open;
+	private float previousClose;
+	private int volume;
+	private float price;
+	private float daysHigh;
+	private String name;
+	private String symbol = "";
+	private float change;
+	private String percentageChange;
+	private float ask;
+	private float bid;
 
 	@Override
-	public String toString() {
-		return "Quote [quoteid=" + quoteid + ", low=" + low + ", open1=" + open1 + ", volume=" + volume + ", price="
-				+ price + ", high=" + high + ", companyname=" + companyname + ", symbol=" + symbol + ", change1="
-				+ change1 + "]";
+	public int hashCode() {
+		return getSymbol().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || !(o instanceof Quote)) {
+			return false;
+		}
+		return o.hashCode() == hashCode();
+	}
+
+	@JsonProperty("DaysLow")
+	public float getDaysLow() {
+		return daysLow;
+	}
+
+	public void setDaysLow(float f) {
+		this.daysLow = f;
+	}
+
+	@JsonProperty("Open")
+	public float getOpen() {
+		return open;
+	}
+
+	public void setOpen(float f) {
+		this.open = f;
+	}
+
+	@JsonProperty("Volume")
+	public int getVolume() {
+		return volume;
+	}
+
+	public void setVolume(int i) {
+		this.volume = i;
+	}
+
+	@JsonProperty("Price")
+	public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float f) {
+		this.price = f;
+	}
+
+	@JsonProperty("DaysHigh")
+	public float getDaysHigh() {
+		return daysHigh;
+	}
+
+	public void setDaysHigh(float f) {
+		this.daysHigh = f;
+	}
+
+	@JsonProperty("Name")
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String s) {
+		this.name = s;
+	}
+
+	@JsonProperty("Symbol")
+	public String getSymbol() {
+		return symbol;
+	}
+
+	public void setSymbol(String s) {
+		if (s != null) {
+			this.symbol = s;
+		}
+	}
+
+	@JsonProperty("Change")
+	public float getChange() {
+		return change;
+	}
+
+	public void setChange(float f) {
+		this.change = f;
+	}
+
+	public String getCreated() {
+		return created;
+	}
+
+	public void setCreated(String s) {
+		this.created = s;
+	}
+
+	@JsonProperty("PreviousClose")
+	public float getPreviousClose() {
+		return previousClose;
+	}
+
+	public void setPreviousClose(float f) {
+		this.previousClose = f;
+	}
+
+	@JsonProperty("PercentageChange")
+	public String getPercentageChange() {
+		return percentageChange;
+	}
+
+	public void setPercentageChange(String s) {
+		this.percentageChange = s;
+	}
+
+	@JsonProperty("Ask")
+	public float getAsk() {
+		return ask;
+	}
+
+	public void setAsk(float f) {
+		this.ask = f;
+	}
+
+	@JsonProperty("Bid")
+	public float getBid() {
+		return bid;
+	}
+
+	public void setBid(float f) {
+		this.bid = f;
 	}
 }

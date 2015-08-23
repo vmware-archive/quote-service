@@ -1,38 +1,27 @@
 package org.springframework.nanotrader.quote;
 
 import java.util.List;
-import java.util.Set;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
+
+import feign.Param;
+import feign.RequestLine;
 
 /**
  * @author jgordon
  */
-public interface QuoteRepository extends
-		PagingAndSortingRepository<Quote, Integer> {
+@Repository
+public interface QuoteRepository {
 
-	Quote findBySymbol(String symbol);
+	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+	public Quote findBySymbol(@Param("query") String query);
 
-	List<Quote> findBySymbolIn(Set<String> symbols);
+	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+	List<Quote> findBySymbolIn(@Param("query") String query);
 
-	@Query("SELECT SUM(q.price)/COUNT(q) FROM Quote q")
-	Long findIndexAverage();
+	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+	Quote findQuote(@Param("query") String query);
 
-	@Query("SELECT SUM(q.open1)/COUNT(q) FROM Quote q")
-	Long findOpenAverage();
-
-	@Query("SELECT SUM(q.volume) FROM Quote q")
-	Long findVolume();
-
-	@Query("SELECT SUM(q.change1) FROM Quote q")
-	Long findChange();
-
-	@Query("SELECT SUM(q.change1) FROM Quote q")
-	List<Quote> topGainers();
-
-	List<Quote> findAllByOrderByChange1Desc(Pageable pageable);
-
-	List<Quote> findAllByOrderByChange1Asc(Pageable pageable);
+	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+	List<Quote> findQuotes(@Param("query") String query);
 }
