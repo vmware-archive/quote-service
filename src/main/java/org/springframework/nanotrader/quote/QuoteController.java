@@ -4,17 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/quoteService")
+@RequestMapping("/quotes")
 public class QuoteController {
+
+	public static final String INDEX_SYMBOL = "^GSPC";
 
 	@Autowired
 	QuoteRepository quoteRepository;
@@ -22,32 +28,19 @@ public class QuoteController {
 	@Autowired
 	Symbols symbols;
 
-	@RequestMapping("/findBySymbol/{symbol}")
+	@Autowired
+	CacheManager manager;
+
+	@Cacheable("quotes")
+	@RequestMapping(value = "/{symbol}", method = RequestMethod.GET)
 	public Quote findBySymbol(@PathVariable String symbol) {
-		if (symbols.exists(symbol)) {
-			return quoteRepository
-					.getQuote("select * from yahoo.finance.quotes where symbol = '"
-							+ symbol + "'");
-		}
-		return null;
-	}
-
-	@RequestMapping("/findBySymbolIn/{set}")
-	public List<Quote> findBySymbolIn(@RequestParam Set<String> set) {
-		Set<String> s = symbols.checkSymbols(set);
-		if (s.size() < 1) {
-			return new ArrayList<Quote>();
-		}
-
-		if (s.size() < 2) {
-			List<Quote> l = new ArrayList<Quote>();
-			l.add(findBySymbol(set.toArray()[0].toString()));
-			return l;
+		if (symbol == null || !symbols.exists(symbol)) {
+			return null;
 		}
 
 		return quoteRepository
-				.getQuotes("select * from yahoo.finance.quotes where symbol in "
-						+ QuoteDecoder.formatSymbols(s));
+				.getQuote("select * from yahoo.finance.quotes where symbol = '"
+						+ symbol + "'");
 	}
 
 	@RequestMapping("/count")
@@ -57,26 +50,33 @@ public class QuoteController {
 
 	@RequestMapping("/indexAverage")
 	public float indexAverage() {
-		return getSPIndexInfo().getPrice();
+		return getIndexInfo().getPrice();
 	}
 
 	@RequestMapping("/openAverage")
 	public float openAverage() {
-		return getSPIndexInfo().getOpen();
+		return getIndexInfo().getOpen();
 	}
 
 	@RequestMapping("/volume")
 	public long volume() {
-		return getSPIndexInfo().getVolume();
+		return getIndexInfo().getVolume();
 	}
 
-	private Quote getSPIndexInfo() {
-		return findBySymbol("^GSPC");
+	public Quote getIndexInfo() {
+		return getIndexInfo(INDEX_SYMBOL);
+	}
+
+	@Cacheable("index")
+	public Quote getIndexInfo(String symbol) {
+		return quoteRepository
+				.getQuote("select * from yahoo.finance.quotes where symbol = '"
+						+ symbol + "'");
 	}
 
 	@RequestMapping("/change")
 	public float change() {
-		return getSPIndexInfo().getChange();
+		return getIndexInfo().getChange();
 	}
 
 	@RequestMapping("/topGainers")
@@ -107,11 +107,36 @@ public class QuoteController {
 		return ms;
 	}
 
-	@RequestMapping("/findAll")
+	@Cacheable("quotes")
+	@RequestMapping("/")
 	public List<Quote> findAll() {
-		String s = "select * from yahoo.finance.quotes where symbol in "
-				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
-				+ " | sort(field=\"Symbol\", descending=\"false\")";
-		return quoteRepository.getQuotes(s);
+
+		// check to see if we have all of our symbols in the cache
+		Cache cache = manager.getCache("quotes");
+		cache.evictExpiredElements();
+
+		if (cache.getKeys().size() < countAllQuotes()) {
+			// some are not in cache, go get all of them.
+			String s = "select * from yahoo.finance.quotes where symbol in "
+					+ QuoteDecoder.formatSymbols(symbols.getSymbols())
+					+ " | sort(field=\"Symbol\", descending=\"false\")";
+			List<Quote> quotes = quoteRepository.getQuotes(s);
+
+			// load these into the cache
+			for (Quote q : quotes) {
+				cache.put(new Element(q.getSymbol(), q));
+			}
+			return quotes;
+		}
+
+		// otherwise cache has everything, just return cached values
+		List<Quote> l = new ArrayList<Quote>();
+
+		@SuppressWarnings("rawtypes")
+		List keys = cache.getKeys();
+		for (Object key : keys) {
+			l.add((Quote) cache.get(key).getObjectValue());
+		}
+		return l;
 	}
 }

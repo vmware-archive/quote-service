@@ -6,20 +6,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,12 +23,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringApplicationConfiguration(classes = { Application.class })
 public class QuoteControllerTest {
 
-	private static final String BASE_URI = "http://localhost:9876/quoteService";
-
 	@Autowired
 	QuoteController quoteController;
-
-	TestRestTemplate restTemplate = new TestRestTemplate();
 
 	@Test
 	public void testFindBySymbol() {
@@ -65,32 +55,6 @@ public class QuoteControllerTest {
 		assertNull(quoteController.findBySymbol(null));
 		assertNull(quoteController.findBySymbol(""));
 		assertNull(quoteController.findBySymbol("IBM"));
-	}
-
-	@Test
-	public void testFindBySymbolIn() {
-		Set<String> s = new HashSet<String>();
-		s.add("AMZN");
-		s.add("EBAY");
-		List<Quote> res = quoteController.findBySymbolIn(s);
-		assertNotNull(res);
-		assertTrue("Should have two results.", res.size() == 2);
-		assertTrue("AMZN".equals(res.get(0).getSymbol())
-				|| "EBAY".equals(res.get(0).getSymbol()));
-		assertTrue("AMZN".equals(res.get(1).getSymbol())
-				|| "EBAY".equals(res.get(1).getSymbol()));
-
-		s.add(null);
-		res = quoteController.findBySymbolIn(s);
-		assertTrue("Should have two results.", res.size() == 2);
-
-		s.add("");
-		res = quoteController.findBySymbolIn(s);
-		assertTrue("Should have two results.", res.size() == 2);
-
-		s.add("IBM");
-		res = quoteController.findBySymbolIn(s);
-		assertTrue("Should have two results.", res.size() == 2);
 	}
 
 	@Test
@@ -160,39 +124,18 @@ public class QuoteControllerTest {
 
 	@Test
 	public void testCountAllQuotes() {
-		assertEquals("23", "" + quoteController.countAllQuotes());
+		assertEquals("22", "" + quoteController.countAllQuotes());
 	}
 
 	@Test
 	public void testFindAll() {
 		List<Quote> all = quoteController.findAll();
-		assertEquals("23", "" + all.size());
+		assertEquals("22", "" + all.size());
 		Quote q = all.get(0);
 		assertNotNull(q);
 		assertEquals(q.getSymbol(), "AAPL");
 		q = all.get(21);
 		assertNotNull(q);
 		assertEquals(q.getSymbol(), "YHOO");
-	}
-
-	@Test
-	@Ignore
-	public void testResponseFndById() throws Exception {
-		ResponseEntity<Quote> qr = restTemplate.getForEntity(BASE_URI
-				+ "/findBySymbol/GOOG", Quote.class);
-		assertNotNull(qr);
-		assertEquals(HttpStatus.OK, qr.getStatusCode());
-		Quote q = qr.getBody();
-		assertEquals("GOOG", q.getSymbol());
-
-		qr = restTemplate.getForEntity(BASE_URI + "/findBySymbol/abc",
-				Quote.class);
-		assertNotNull(qr);
-		assertEquals(HttpStatus.NOT_FOUND, qr.getStatusCode());
-
-		qr = restTemplate
-				.getForEntity(BASE_URI + "/findBySymbol/", Quote.class);
-		assertNotNull(qr);
-		assertEquals(HttpStatus.BAD_REQUEST, qr.getStatusCode());
 	}
 }
