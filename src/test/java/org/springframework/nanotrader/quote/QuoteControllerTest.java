@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -131,11 +132,28 @@ public class QuoteControllerTest {
 	public void testFindAll() {
 		List<Quote> all = quoteController.findAll();
 		assertEquals("22", "" + all.size());
-		Quote q = all.get(0);
-		assertNotNull(q);
-		assertEquals(q.getSymbol(), "AAPL");
-		q = all.get(21);
-		assertNotNull(q);
-		assertEquals(q.getSymbol(), "YHOO");
+	}
+
+	@Test
+	public void testDescComparator() {
+		List<Quote> l = quoteController.findAll();
+		Collections.sort(l, new DescendingChangeComparator());
+		float f = Float.MAX_VALUE;
+		for (Quote q : l) {
+			assertTrue(f + " is greater than " + q.getChange(),
+					f >= q.getChange());
+			f = q.getChange();
+		}
+	}
+
+	@Test
+	public void testAscComparator() {
+		List<Quote> l = quoteController.findAll();
+		Collections.sort(l, new AscendingChangeComparator());
+		float f = -Float.MAX_VALUE;
+		for (Quote q : l) {
+			assertTrue(f + " is less than " + q.getChange(), f <= q.getChange());
+			f = q.getChange();
+		}
 	}
 }

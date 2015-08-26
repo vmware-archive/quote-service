@@ -63,7 +63,16 @@ public class CacheTest {
 		assertNull(q);
 		assertEquals(2, cache.getStatistics().cacheHitCount());
 		assertEquals(3, cache.getStatistics().cacheMissCount());
-		System.out.println(cache.getKeys());
+
+		q = quoteController.findBySymbol(null);
+		assertNull(q);
+		assertEquals(2, cache.getStatistics().cacheHitCount());
+		assertEquals(4, cache.getStatistics().cacheMissCount());
+
+		q = quoteController.findBySymbol("");
+		assertNull(q);
+		assertEquals(2, cache.getStatistics().cacheHitCount());
+		assertEquals(5, cache.getStatistics().cacheMissCount());
 	}
 
 	@Test
@@ -72,28 +81,23 @@ public class CacheTest {
 		cache.removeAll();
 		assertTrue(cache.getKeys().size() == 0);
 
-		// long hits = cache.getStatistics().cacheHitCount();
-		// assertEquals(0, hits);
-
-		// long misses = cache.getStatistics().cacheMissCount();
-		// assertEquals(0, misses);
-
-		// long puts = cache.getStatistics().cachePutCount();
+		long hits = cache.getStatistics().cacheHitCount();
+		long misses = cache.getStatistics().cacheMissCount();
+		long puts = cache.getStatistics().cachePutCount();
 
 		List<Quote> l = quoteController.findAll();
 		assertNotNull(l);
 		assertEquals(22, l.size());
-		// assertEquals(puts + 22, cache.getStatistics().cachePutCount());
-		// assertEquals(hits, cache.getStatistics().cacheHitCount());
-		// assertEquals(1, cache.getStatistics().cacheMissCount());
+		assertEquals(puts + 22, cache.getStatistics().cachePutCount());
+		assertEquals(hits, cache.getStatistics().cacheHitCount());
+		assertEquals(misses, cache.getStatistics().cacheMissCount());
 
-		// Quote q = quoteController.findBySymbol("IBM");
-		// assertNull(q);
-		// assertEquals(0, cache.getStatistics().cacheHitCount());
-		// assertEquals(1, cache.getStatistics().cacheMissCount());
+		Quote q = quoteController.findBySymbol("IBM");
+		assertNull(q);
+		assertEquals(hits, cache.getStatistics().cacheHitCount());
+		assertEquals(++misses, cache.getStatistics().cacheMissCount());
 
-		long puts = cache.getStatistics().cachePutCount();
-
+		puts = cache.getStatistics().cachePutCount();
 		l = quoteController.findAll();
 		assertNotNull(l);
 		assertEquals(22, l.size());
@@ -108,20 +112,24 @@ public class CacheTest {
 		assertEquals(0, cache.getStatistics().cacheHitCount());
 		assertEquals(0, cache.getStatistics().cacheMissCount());
 
-		Quote q = quoteController.getIndexInfo(QuoteController.INDEX_SYMBOL);
+		Quote q = quoteController.getIndexInfo();
 		assertNotNull(q);
-		// System.out.println(cache.getKeys());
 		assertEquals(0, cache.getStatistics().cacheHitCount());
 		assertEquals(1, cache.getStatistics().cacheMissCount());
 
-		q = quoteController.getIndexInfo(QuoteController.INDEX_SYMBOL);
+		q = quoteController.getIndexInfo();
 		assertNotNull(q);
 		assertEquals(1, cache.getStatistics().cacheHitCount());
 		assertEquals(1, cache.getStatistics().cacheMissCount());
 
-		long puts = cache.getStatistics().cachePutCount();
 		float f = quoteController.change();
 		assertTrue(f != 0.0f);
-		assertEquals(puts, cache.getStatistics().cachePutCount());
+		assertEquals(1, cache.getStatistics().cacheHitCount());
+		assertEquals(2, cache.getStatistics().cacheMissCount());
+
+		f = quoteController.change();
+		assertTrue(f != 0.0f);
+		assertEquals(2, cache.getStatistics().cacheHitCount());
+		assertEquals(2, cache.getStatistics().cacheMissCount());
 	}
 }

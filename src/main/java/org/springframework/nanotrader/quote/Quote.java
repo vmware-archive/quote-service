@@ -17,6 +17,9 @@ package org.springframework.nanotrader.quote;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Quote implements Serializable {
@@ -165,5 +168,9 @@ public class Quote implements Serializable {
 
 	public void setBid(float f) {
 		this.bid = f;
+	}
+
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 }

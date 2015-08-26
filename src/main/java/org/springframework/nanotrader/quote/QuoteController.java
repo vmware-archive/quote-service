@@ -1,6 +1,7 @@
 package org.springframework.nanotrader.quote;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,68 +32,70 @@ public class QuoteController {
 	@Autowired
 	CacheManager manager;
 
-	@Cacheable("quotes")
+	@Cacheable(value = "quotes", unless = "#result == null")
 	@RequestMapping(value = "/{symbol}", method = RequestMethod.GET)
 	public Quote findBySymbol(@PathVariable String symbol) {
 		if (symbol == null || !symbols.exists(symbol)) {
 			return null;
 		}
-
-		return quoteRepository
-				.getQuote("select * from yahoo.finance.quotes where symbol = '"
-						+ symbol + "'");
+		return getQuote(symbol);
 	}
 
+	@Cacheable(value = "index", key = "'count'")
 	@RequestMapping("/count")
 	public long countAllQuotes() {
 		return symbols.getSymbols().size();
 	}
 
+	@Cacheable(value = "index", key = "'indexAverage'")
 	@RequestMapping("/indexAverage")
 	public float indexAverage() {
 		return getIndexInfo().getPrice();
 	}
 
+	@Cacheable(value = "index", key = "'openAverage'")
 	@RequestMapping("/openAverage")
 	public float openAverage() {
 		return getIndexInfo().getOpen();
 	}
 
+	@Cacheable(value = "index", key = "'volume'")
 	@RequestMapping("/volume")
 	public long volume() {
 		return getIndexInfo().getVolume();
 	}
 
+	@Cacheable(value = "index", key = "'" + INDEX_SYMBOL + "'")
 	public Quote getIndexInfo() {
-		return getIndexInfo(INDEX_SYMBOL);
+		return getQuote(INDEX_SYMBOL);
 	}
 
-	@Cacheable("index")
-	public Quote getIndexInfo(String symbol) {
+	private Quote getQuote(String symbol) {
 		return quoteRepository
 				.getQuote("select * from yahoo.finance.quotes where symbol = '"
 						+ symbol + "'");
 	}
 
+	@Cacheable(value = "index", key = "'change'")
 	@RequestMapping("/change")
 	public float change() {
 		return getIndexInfo().getChange();
 	}
 
+	@Cacheable(value = "index", key = "'topGainers'")
 	@RequestMapping("/topGainers")
 	public List<Quote> topGainers() {
-		String s = "select * from yahoo.finance.quotes where symbol in "
-				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
-				+ " | sort(field=\"Change\", descending=\"true\") | truncate(count=3)";
-		return quoteRepository.getQuotes(s);
+		List<Quote> l = new ArrayList<Quote>(findAll());
+		Collections.sort(l, new DescendingChangeComparator());
+		return l.subList(0, 3);
 	}
 
+	@Cacheable(value = "index", key = "'topLosers'")
 	@RequestMapping("/topLosers")
 	public List<Quote> topLosers() {
-		String s = "select * from yahoo.finance.quotes where symbol in "
-				+ QuoteDecoder.formatSymbols(symbols.getSymbols())
-				+ " | sort(field=\"Change\", descending=\"false\") | truncate(count=3)";
-		return quoteRepository.getQuotes(s);
+		List<Quote> l = new ArrayList<Quote>(findAll());
+		Collections.sort(l, new AscendingChangeComparator());
+		return l.subList(0, 3);
 	}
 
 	@RequestMapping("/marketSummary")
@@ -107,7 +110,6 @@ public class QuoteController {
 		return ms;
 	}
 
-	@Cacheable("quotes")
 	@RequestMapping("/")
 	public List<Quote> findAll() {
 
@@ -116,10 +118,12 @@ public class QuoteController {
 		cache.evictExpiredElements();
 
 		if (cache.getKeys().size() < countAllQuotes()) {
-			// some are not in cache, go get all of them.
+			// some are not in cache, clear things out and go get all of them.
+			cache.removeAll();
+
 			String s = "select * from yahoo.finance.quotes where symbol in "
-					+ QuoteDecoder.formatSymbols(symbols.getSymbols())
-					+ " | sort(field=\"Symbol\", descending=\"false\")";
+					+ QuoteDecoder.formatSymbols(symbols.getSymbols());
+
 			List<Quote> quotes = quoteRepository.getQuotes(s);
 
 			// load these into the cache
@@ -135,7 +139,10 @@ public class QuoteController {
 		@SuppressWarnings("rawtypes")
 		List keys = cache.getKeys();
 		for (Object key : keys) {
-			l.add((Quote) cache.get(key).getObjectValue());
+			Object o = cache.get(key).getObjectValue();
+			if (o instanceof Quote) {
+				l.add((Quote) o);
+			}
 		}
 		return l;
 	}
