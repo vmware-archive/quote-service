@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Map;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -36,43 +37,43 @@ public class CacheTest {
 		cache.removeAll();
 		assertTrue(cache.getKeys().size() == 0);
 
-		assertEquals(0, cache.getStatistics().cacheHitCount());
-		assertEquals(0, cache.getStatistics().cacheMissCount());
+		long hits = cache.getStatistics().cacheHitCount();
+		long misses = cache.getStatistics().cacheMissCount();
 
 		Quote q = quoteController.findBySymbol("GOOG");
 		assertNotNull(q);
-		assertEquals(0, cache.getStatistics().cacheHitCount());
-		assertEquals(1, cache.getStatistics().cacheMissCount());
+		assertEquals(hits, cache.getStatistics().cacheHitCount());
+		assertEquals(++misses, cache.getStatistics().cacheMissCount());
 
 		q = quoteController.findBySymbol("GOOG");
 		assertNotNull(q);
-		assertEquals(1, cache.getStatistics().cacheHitCount());
-		assertEquals(1, cache.getStatistics().cacheMissCount());
+		assertEquals(++hits, cache.getStatistics().cacheHitCount());
+		assertEquals(misses, cache.getStatistics().cacheMissCount());
 
 		q = quoteController.findBySymbol("YHOO");
 		assertNotNull(q);
-		assertEquals(1, cache.getStatistics().cacheHitCount());
-		assertEquals(2, cache.getStatistics().cacheMissCount());
+		assertEquals(hits, cache.getStatistics().cacheHitCount());
+		assertEquals(++misses, cache.getStatistics().cacheMissCount());
 
 		q = quoteController.findBySymbol("YHOO");
 		assertNotNull(q);
-		assertEquals(2, cache.getStatistics().cacheHitCount());
-		assertEquals(2, cache.getStatistics().cacheMissCount());
+		assertEquals(++hits, cache.getStatistics().cacheHitCount());
+		assertEquals(misses, cache.getStatistics().cacheMissCount());
 
 		q = quoteController.findBySymbol("IBM");
 		assertNull(q);
-		assertEquals(2, cache.getStatistics().cacheHitCount());
-		assertEquals(3, cache.getStatistics().cacheMissCount());
+		assertEquals(hits, cache.getStatistics().cacheHitCount());
+		assertEquals(++misses, cache.getStatistics().cacheMissCount());
 
 		q = quoteController.findBySymbol(null);
 		assertNull(q);
-		assertEquals(2, cache.getStatistics().cacheHitCount());
-		assertEquals(4, cache.getStatistics().cacheMissCount());
+		assertEquals(hits, cache.getStatistics().cacheHitCount());
+		assertEquals(++misses, cache.getStatistics().cacheMissCount());
 
 		q = quoteController.findBySymbol("");
 		assertNull(q);
-		assertEquals(2, cache.getStatistics().cacheHitCount());
-		assertEquals(5, cache.getStatistics().cacheMissCount());
+		assertEquals(hits, cache.getStatistics().cacheHitCount());
+		assertEquals(++misses, cache.getStatistics().cacheMissCount());
 	}
 
 	@Test
@@ -112,24 +113,14 @@ public class CacheTest {
 		assertEquals(0, cache.getStatistics().cacheHitCount());
 		assertEquals(0, cache.getStatistics().cacheMissCount());
 
-		Quote q = quoteController.getIndexInfo();
-		assertNotNull(q);
+		Map<String, Object> m = quoteController.marketSummary();
+		assertNotNull(m);
 		assertEquals(0, cache.getStatistics().cacheHitCount());
 		assertEquals(1, cache.getStatistics().cacheMissCount());
 
-		q = quoteController.getIndexInfo();
-		assertNotNull(q);
+		m = quoteController.marketSummary();
+		assertNotNull(m);
 		assertEquals(1, cache.getStatistics().cacheHitCount());
 		assertEquals(1, cache.getStatistics().cacheMissCount());
-
-		float f = quoteController.change();
-		assertTrue(f != 0.0f);
-		assertEquals(1, cache.getStatistics().cacheHitCount());
-		assertEquals(2, cache.getStatistics().cacheMissCount());
-
-		f = quoteController.change();
-		assertTrue(f != 0.0f);
-		assertEquals(2, cache.getStatistics().cacheHitCount());
-		assertEquals(2, cache.getStatistics().cacheMissCount());
 	}
 }

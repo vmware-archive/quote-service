@@ -2,10 +2,10 @@ package org.springframework.nanotrader.quote;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,45 +45,6 @@ public class QuoteRestTest {
 	}
 
 	@Test
-	public void testFindIndexAverage() {
-		ResponseEntity<Float> fr = restTemplate.getForEntity(BASE_URI
-				+ "/indexAverage", Float.class);
-		assertNotNull("Should find a result.", fr);
-		Float f = fr.getBody();
-		assertNotNull(f);
-		assertTrue(f > 0.0f);
-	}
-
-	@Test
-	public void testFindOpenAverage() {
-		ResponseEntity<Float> fr = restTemplate.getForEntity(BASE_URI
-				+ "/openAverage", Float.class);
-		assertNotNull("Should find a result.", fr);
-		Float f = fr.getBody();
-		assertNotNull(f);
-		assertTrue(f > 0.0f);
-	}
-
-	@Test
-	public void testFindVolume() {
-		ResponseEntity<Float> fr = restTemplate.getForEntity(BASE_URI
-				+ "/volume", Float.class);
-		assertNotNull("Should find a result.", fr);
-		Float f = fr.getBody();
-		assertNotNull(f);
-		assertTrue(f > 0.0f);
-	}
-
-	@Test
-	public void testFindChange() {
-		ResponseEntity<Float> fr = restTemplate.getForEntity(BASE_URI
-				+ "/change", Float.class);
-		assertNotNull("Should find a result.", fr);
-		Float f = fr.getBody();
-		assertNotNull(f);
-	}
-
-	@Test
 	public void testMarketSummary() {
 		ResponseEntity<Map<String, Object>> mr = restTemplate.exchange(BASE_URI
 				+ "/marketSummary", HttpMethod.GET, null,
@@ -93,58 +54,13 @@ public class QuoteRestTest {
 		assertNotNull("Should find a result.", mr);
 		Map<String, Object> m = mr.getBody();
 		assertNotNull(m);
-		assertTrue(m.size() == 5);
-		assertNotNull(m.get("tradeStockIndexAverage"));
-		assertNotNull(m.get("tradeStockIndexOpenAverage"));
-		assertNotNull(m.get("tradeStockIndexVolume"));
-		assertNotNull(m.get("cnt"));
+		assertEquals(6, m.size());
+		assertNotNull(m.get("average"));
+		assertNotNull(m.get("open"));
+		assertNotNull(m.get("volume"));
 		assertNotNull(m.get("change"));
-	}
-
-	@Test
-	public void testGainers() {
-		ResponseEntity<List<Quote>> qr = restTemplate.exchange(BASE_URI
-				+ "/topGainers", HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<Quote>>() {
-				});
-
-		assertNotNull("Should find a result.", qr);
-		List<Quote> l = qr.getBody();
-		assertNotNull(l);
-		assertEquals(3, l.size());
-		for (Quote q : l) {
-			assertNotNull(q);
-			assertNotNull(q.getSymbol());
-			assertNotNull(q.getChange());
-		}
-	}
-
-	@Test
-	public void testLosers() {
-		ResponseEntity<List<Quote>> qr = restTemplate.exchange(BASE_URI
-				+ "/topLosers", HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<Quote>>() {
-				});
-
-		assertNotNull("Should find a result.", qr);
-		List<Quote> l = qr.getBody();
-		assertNotNull(l);
-		assertEquals(3, l.size());
-		for (Quote q : l) {
-			assertNotNull(q);
-			assertNotNull(q.getSymbol());
-			assertNotNull(q.getChange());
-		}
-	}
-
-	@Test
-	public void testCountAllQuotes() {
-		ResponseEntity<Long> lr = restTemplate.getForEntity(
-				BASE_URI + "/count", Long.class);
-		assertNotNull("Should find a result.", lr);
-		Long l = lr.getBody();
-		assertNotNull(l);
-		assertEquals(22l, l.longValue());
+		assertNotNull(m.get("topGainers"));
+		assertNotNull(m.get("topLosers"));
 	}
 
 	@Test
@@ -158,5 +74,18 @@ public class QuoteRestTest {
 		List<Quote> m = qr.getBody();
 		assertNotNull(m);
 		assertEquals(22, m.size());
+	}
+
+	@Test
+	public void testSymbols() {
+		ResponseEntity<Set<String>> qr = restTemplate.exchange(BASE_URI
+				+ "/symbols", HttpMethod.GET, null,
+				new ParameterizedTypeReference<Set<String>>() {
+				});
+
+		assertNotNull("Should find a result.", qr);
+		Set<String> s = qr.getBody();
+		assertNotNull(s);
+		assertEquals(22, s.size());
 	}
 }

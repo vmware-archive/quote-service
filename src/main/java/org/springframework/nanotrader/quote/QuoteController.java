@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -41,32 +42,11 @@ public class QuoteController {
 		return getQuote(symbol);
 	}
 
-	@Cacheable(value = "index", key = "'count'")
-	@RequestMapping("/count")
-	public long countAllQuotes() {
+	private long countAllQuotes() {
 		return symbols.getSymbols().size();
 	}
 
-	@Cacheable(value = "index", key = "'indexAverage'")
-	@RequestMapping("/indexAverage")
-	public float indexAverage() {
-		return getIndexInfo().getPrice();
-	}
-
-	@Cacheable(value = "index", key = "'openAverage'")
-	@RequestMapping("/openAverage")
-	public float openAverage() {
-		return getIndexInfo().getOpen();
-	}
-
-	@Cacheable(value = "index", key = "'volume'")
-	@RequestMapping("/volume")
-	public long volume() {
-		return getIndexInfo().getVolume();
-	}
-
-	@Cacheable(value = "index", key = "'" + INDEX_SYMBOL + "'")
-	public Quote getIndexInfo() {
+	private Quote getIndexInfo() {
 		return getQuote(INDEX_SYMBOL);
 	}
 
@@ -76,36 +56,29 @@ public class QuoteController {
 						+ symbol + "'");
 	}
 
-	@Cacheable(value = "index", key = "'change'")
-	@RequestMapping("/change")
-	public float change() {
-		return getIndexInfo().getChange();
-	}
-
-	@Cacheable(value = "index", key = "'topGainers'")
-	@RequestMapping("/topGainers")
-	public List<Quote> topGainers() {
+	private List<Quote> topGainers() {
 		List<Quote> l = new ArrayList<Quote>(findAll());
 		Collections.sort(l, new DescendingChangeComparator());
 		return l.subList(0, 3);
 	}
 
-	@Cacheable(value = "index", key = "'topLosers'")
-	@RequestMapping("/topLosers")
-	public List<Quote> topLosers() {
+	private List<Quote> topLosers() {
 		List<Quote> l = new ArrayList<Quote>(findAll());
 		Collections.sort(l, new AscendingChangeComparator());
 		return l.subList(0, 3);
 	}
 
+	@Cacheable(value = "index", key = "'marketSummary'")
 	@RequestMapping("/marketSummary")
 	public Map<String, Object> marketSummary() {
+		Quote indexInfo = getIndexInfo();
 		Map<String, Object> ms = new HashMap<String, Object>();
-		ms.put("tradeStockIndexAverage", indexAverage());
-		ms.put("tradeStockIndexOpenAverage", openAverage());
-		ms.put("tradeStockIndexVolume", volume());
-		ms.put("cnt", countAllQuotes());
-		ms.put("change", change());
+		ms.put("average", indexInfo.getPrice());
+		ms.put("open", indexInfo.getOpen());
+		ms.put("volume", indexInfo.getVolume());
+		ms.put("change", indexInfo.getChange());
+		ms.put("topGainers", topGainers());
+		ms.put("topLosers", topLosers());
 
 		return ms;
 	}
@@ -146,4 +119,10 @@ public class QuoteController {
 		}
 		return l;
 	}
+
+	@RequestMapping("/symbols")
+	public Set<String> symbols() {
+		return symbols.getSymbols();
+	}
+
 }

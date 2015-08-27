@@ -58,50 +58,17 @@ public class QuoteControllerTest {
 		assertNull(quoteController.findBySymbol("IBM"));
 	}
 
-	@Test
-	public void testFindIndexAverage() {
-		float f = quoteController.indexAverage();
-		assertTrue(f > 0.0f);
-	}
-
-	@Test
-	public void testFindOpenAverage() {
-		float f = quoteController.openAverage();
-		assertTrue(f > 0.0f);
-	}
-
-	@Test
-	public void testFindVolume() {
-		long l = quoteController.volume();
-		assertTrue(l > 0);
-	}
-
-	@Test
-	public void testFindChange() {
-		try {
-			quoteController.change();
-		} catch (Throwable t) {
-			// can be any number, positive, negative or zero, so just looking
-			// for "no exception."
-			fail(t.getMessage());
-		}
-	}
-
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testMarketSummary() {
 		Map<String, Object> m = quoteController.marketSummary();
 		assertNotNull(m);
-		assertTrue(m.size() == 5);
-		assertNotNull(m.get("tradeStockIndexAverage"));
-		assertNotNull(m.get("tradeStockIndexOpenAverage"));
-		assertNotNull(m.get("tradeStockIndexVolume"));
-		assertNotNull(m.get("cnt"));
+		assertEquals(6, m.size());
+		assertNotNull(m.get("average"));
+		assertNotNull(m.get("open"));
+		assertNotNull(m.get("volume"));
 		assertNotNull(m.get("change"));
-	}
-
-	@Test
-	public void testGainers() {
-		List<Quote> qs = quoteController.topGainers();
+		List<Quote> qs = (List<Quote>) m.get("topGainers");
 		assertNotNull(qs);
 		assertEquals(3, qs.size());
 		for (Quote q : qs) {
@@ -109,11 +76,8 @@ public class QuoteControllerTest {
 			assertNotNull(q.getSymbol());
 			assertNotNull(q.getChange());
 		}
-	}
 
-	@Test
-	public void testLosers() {
-		List<Quote> qs = quoteController.topLosers();
+		qs = (List<Quote>) m.get("topLosers");
 		assertNotNull(qs);
 		assertEquals(3, qs.size());
 		for (Quote q : qs) {
@@ -121,11 +85,7 @@ public class QuoteControllerTest {
 			assertNotNull(q.getSymbol());
 			assertNotNull(q.getChange());
 		}
-	}
 
-	@Test
-	public void testCountAllQuotes() {
-		assertEquals("22", "" + quoteController.countAllQuotes());
 	}
 
 	@Test
