@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,17 +57,15 @@ public class QuoteControllerTest {
 		assertNull(quoteController.findBySymbol("IBM"));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testMarketSummary() {
-		Map<String, Object> m = quoteController.marketSummary();
+		MarketSummary m = quoteController.marketSummary();
 		assertNotNull(m);
-		assertEquals(6, m.size());
-		assertNotNull(m.get("average"));
-		assertNotNull(m.get("open"));
-		assertNotNull(m.get("volume"));
-		assertNotNull(m.get("change"));
-		List<Quote> qs = (List<Quote>) m.get("topGainers");
+		assertTrue(m.getAverage() != 0.0f);
+		assertTrue(m.getOpen() != 0.0f);
+		assertTrue(m.getVolume() != 0.0f);
+		assertTrue(m.getChange() != 0.0f);
+		List<Quote> qs = m.getTopGainers();
 		assertNotNull(qs);
 		assertEquals(3, qs.size());
 		for (Quote q : qs) {
@@ -77,7 +74,7 @@ public class QuoteControllerTest {
 			assertNotNull(q.getChange());
 		}
 
-		qs = (List<Quote>) m.get("topLosers");
+		qs = m.getTopLosers();
 		assertNotNull(qs);
 		assertEquals(3, qs.size());
 		for (Quote q : qs) {
@@ -85,7 +82,6 @@ public class QuoteControllerTest {
 			assertNotNull(q.getSymbol());
 			assertNotNull(q.getChange());
 		}
-
 	}
 
 	@Test

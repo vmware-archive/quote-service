@@ -2,9 +2,7 @@ package org.springframework.nanotrader.quote;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.sf.ehcache.Cache;
@@ -70,17 +68,8 @@ public class QuoteController {
 
 	@Cacheable(value = "index", key = "'marketSummary'")
 	@RequestMapping("/marketSummary")
-	public Map<String, Object> marketSummary() {
-		Quote indexInfo = getIndexInfo();
-		Map<String, Object> ms = new HashMap<String, Object>();
-		ms.put("average", indexInfo.getPrice());
-		ms.put("open", indexInfo.getOpen());
-		ms.put("volume", indexInfo.getVolume());
-		ms.put("change", indexInfo.getChange());
-		ms.put("topGainers", topGainers());
-		ms.put("topLosers", topLosers());
-
-		return ms;
+	public MarketSummary marketSummary() {
+		return new MarketSummary(getIndexInfo(), topLosers(), topGainers());
 	}
 
 	@RequestMapping("/")

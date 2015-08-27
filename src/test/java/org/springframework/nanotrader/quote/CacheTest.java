@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Map;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -113,7 +112,7 @@ public class CacheTest {
 		assertEquals(0, cache.getStatistics().cacheHitCount());
 		assertEquals(0, cache.getStatistics().cacheMissCount());
 
-		Map<String, Object> m = quoteController.marketSummary();
+		MarketSummary m = quoteController.marketSummary();
 		assertNotNull(m);
 		assertEquals(0, cache.getStatistics().cacheHitCount());
 		assertEquals(1, cache.getStatistics().cacheMissCount());
