@@ -65,7 +65,11 @@ public class QuoteControllerTest {
 		assertTrue(m.getOpen() != 0.0f);
 		assertTrue(m.getVolume() != 0.0f);
 		assertTrue(m.getChange() != 0.0f);
-		List<Quote> qs = m.getTopGainers();
+	}
+
+	@Test
+	public void testGainers() {
+		List<Quote> qs = quoteController.topGainers();
 		assertNotNull(qs);
 		assertEquals(3, qs.size());
 		for (Quote q : qs) {
@@ -73,8 +77,11 @@ public class QuoteControllerTest {
 			assertNotNull(q.getSymbol());
 			assertNotNull(q.getChange());
 		}
+	}
 
-		qs = m.getTopLosers();
+	@Test
+	public void testLosers() {
+		List<Quote> qs = quoteController.topLosers();
 		assertNotNull(qs);
 		assertEquals(3, qs.size());
 		for (Quote q : qs) {

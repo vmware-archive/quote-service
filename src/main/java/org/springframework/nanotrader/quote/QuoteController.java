@@ -54,13 +54,15 @@ public class QuoteController {
 						+ symbol + "'");
 	}
 
-	private List<Quote> topGainers() {
+	@RequestMapping("/topGainers")
+	public List<Quote> topGainers() {
 		List<Quote> l = new ArrayList<Quote>(findAll());
 		Collections.sort(l, new DescendingChangeComparator());
 		return l.subList(0, 3);
 	}
 
-	private List<Quote> topLosers() {
+	@RequestMapping("/topLosers")
+	public List<Quote> topLosers() {
 		List<Quote> l = new ArrayList<Quote>(findAll());
 		Collections.sort(l, new AscendingChangeComparator());
 		return l.subList(0, 3);
@@ -69,7 +71,7 @@ public class QuoteController {
 	@Cacheable(value = "index", key = "'marketSummary'")
 	@RequestMapping("/marketSummary")
 	public MarketSummary marketSummary() {
-		return new MarketSummary(getIndexInfo(), topLosers(), topGainers());
+		return new MarketSummary(getIndexInfo());
 	}
 
 	@RequestMapping("/")
