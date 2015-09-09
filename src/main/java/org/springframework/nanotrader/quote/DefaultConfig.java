@@ -21,10 +21,8 @@ public class DefaultConfig {
 	}
 
 	public QuoteRepository createRepository(String url) {
-		QuoteRepository qr = Feign.builder().encoder(new GsonEncoder())
+		return Feign.builder().encoder(new GsonEncoder())
 				.decoder(new QuoteDecoder()).target(QuoteRepository.class, url);
-
-		return qr;
 	}
 
 	@Bean
