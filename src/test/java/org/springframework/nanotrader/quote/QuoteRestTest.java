@@ -54,11 +54,12 @@ public class QuoteRestTest {
 		assertNotNull("Should find a result.", mr);
 		Map<String, Object> m = mr.getBody();
 		assertNotNull(m);
-		assertEquals(4, m.size());
+		assertEquals(5, m.size());
 		assertNotNull(m.get("average"));
 		assertNotNull(m.get("open"));
 		assertNotNull(m.get("volume"));
 		assertNotNull(m.get("change"));
+		assertNotNull(m.get("percentGain"));
 	}
 
 	@Test
