@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: quote-service
+    
+eureka:
+  client:
+    registerWithEureka: false
