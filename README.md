@@ -16,6 +16,7 @@ mvn spring-boot:run
 once it's running locally, try out some operations:
 
 <http://localhost:8080/quotes/GOOG>
+
 <http://localhost:8080/quotes/marketSummary>
 
 To deploy to cloud foundry edit the manifest.yml file to give the app a unique name and perform a cf push.
