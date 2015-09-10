@@ -7,6 +7,14 @@ Results are cached to improve response times, and due to the daily query limitat
 
 Additionally, the universe of supported securities is limited to those listed in the symbols.json [file](https://github.com/cf-platform-eng/quote-service/blob/part2/src/main/resources/symbols.json). This is because of the way SpringTrader currently tracks market data. The existing service API needs a way to get "all quotes" in one call: not practical with a universe of thousands of securities.
 
+To get the source code, run the following from a clean directory:
+
+```bash
+git clone git@github.com:cf-platform-eng/quote-service.git
+cd quote-service
+git checkout part2
+```
+
 Build the service using the maven conventions (from the root directory of the project):
 
 ```bash
