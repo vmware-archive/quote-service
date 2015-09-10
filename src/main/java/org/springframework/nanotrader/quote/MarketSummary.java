@@ -12,7 +12,7 @@ public class MarketSummary implements Serializable {
 	private float open;
 	private float volume;
 	private float change;
-	private float percentGain;
+	private String percentGain;
 
 	public MarketSummary(Quote index) {
 		load(index);
@@ -26,7 +26,7 @@ public class MarketSummary implements Serializable {
 		setOpen(index.getOpen());
 		setVolume(index.getVolume());
 		setChange(index.getChange());
-		setPercentGain(convertPercent(index.getPercentageChange()));
+		setPercentGain(index.getPercentageChange());
 	}
 
 	public float getAverage() {
@@ -66,28 +66,11 @@ public class MarketSummary implements Serializable {
 				ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
-	public float getPercentGain() {
+	public String getPercentGain() {
 		return percentGain;
 	}
 
-	private void setPercentGain(float percentGain) {
+	private void setPercentGain(String percentGain) {
 		this.percentGain = percentGain;
-	}
-
-	private float convertPercent(String percent) {
-		if (percent == null || percent.trim().length() < 1) {
-			return 0.0f;
-		}
-
-		String s = percent.trim();
-		if (s.endsWith("%")) {
-			s = s.substring(0, s.length() - 1);
-		}
-
-		try {
-			return Float.parseFloat(s);
-		} catch (NumberFormatException e) {
-			return 0.0f;
-		}
 	}
 }

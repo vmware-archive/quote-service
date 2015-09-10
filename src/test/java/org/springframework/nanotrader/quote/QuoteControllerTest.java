@@ -6,9 +6,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +51,8 @@ public class QuoteControllerTest {
 		// non-existent symbols
 		assertNull(quoteController.findBySymbol(null));
 		assertNull(quoteController.findBySymbol(""));
-		assertNull(quoteController.findBySymbol("IBM"));
+		assertNull(quoteController.findBySymbol("BOGUS"));
+		assertNotNull(quoteController.findBySymbol("IBM"));
 	}
 
 	@Test
@@ -65,58 +63,5 @@ public class QuoteControllerTest {
 		assertTrue(m.getOpen() != 0.0f);
 		assertTrue(m.getVolume() != 0.0f);
 		assertTrue(m.getChange() != 0.0f);
-	}
-
-	@Test
-	public void testGainers() {
-		List<Quote> qs = quoteController.topGainers();
-		assertNotNull(qs);
-		assertEquals(3, qs.size());
-		for (Quote q : qs) {
-			assertNotNull(q);
-			assertNotNull(q.getSymbol());
-			assertNotNull(q.getChange());
-		}
-	}
-
-	@Test
-	public void testLosers() {
-		List<Quote> qs = quoteController.topLosers();
-		assertNotNull(qs);
-		assertEquals(3, qs.size());
-		for (Quote q : qs) {
-			assertNotNull(q);
-			assertNotNull(q.getSymbol());
-			assertNotNull(q.getChange());
-		}
-	}
-
-	@Test
-	public void testFindAll() {
-		List<Quote> all = quoteController.findAll();
-		assertEquals("22", "" + all.size());
-	}
-
-	@Test
-	public void testDescComparator() {
-		List<Quote> l = quoteController.findAll();
-		Collections.sort(l, new DescendingChangeComparator());
-		float f = Float.MAX_VALUE;
-		for (Quote q : l) {
-			assertTrue(f + " is greater than " + q.getChange(),
-					f >= q.getChange());
-			f = q.getChange();
-		}
-	}
-
-	@Test
-	public void testAscComparator() {
-		List<Quote> l = quoteController.findAll();
-		Collections.sort(l, new AscendingChangeComparator());
-		float f = -Float.MAX_VALUE;
-		for (Quote q : l) {
-			assertTrue(f + " is less than " + q.getChange(), f <= q.getChange());
-			f = q.getChange();
-		}
 	}
 }
