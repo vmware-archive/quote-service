@@ -2,20 +2,20 @@ package org.springframework.nanotrader.quote;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
-
-import feign.Param;
-import feign.RequestLine;
 
 /**
  * @author jgordon
  */
+
 @Repository
-public interface QuoteRepository {
+public interface QuoteRepository extends
+		PagingAndSortingRepository<Quote, String> {
 
-	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-	public Quote getQuote(@Param("query") String query);
+	List<Quote> findAllByOrderByChangeDesc(Pageable pageable);
 
-	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-	List<Quote> getQuotes(@Param("query") String query);
+	List<Quote> findAllByOrderByChangeAsc(Pageable pageable);
+
 }

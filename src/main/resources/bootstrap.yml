@@ -1,6 +1,6 @@
 spring:
   application:
-    name: live-quote-service
+    name: db-quote-service
 
 ---
 spring:

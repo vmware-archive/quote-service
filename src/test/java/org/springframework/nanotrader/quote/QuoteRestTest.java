@@ -72,7 +72,7 @@ public class QuoteRestTest {
 		assertNotNull("Should find a result.", qr);
 		List<Quote> m = qr.getBody();
 		assertNotNull(m);
-		assertEquals(22, m.size());
+		assertEquals(3, m.size());
 	}
 
 	@Test

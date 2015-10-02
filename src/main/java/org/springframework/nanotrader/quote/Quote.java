@@ -17,13 +17,22 @@ package org.springframework.nanotrader.quote;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Entity
+@Table(name = "QUOTE")
 public class Quote implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	@Id
+	private String symbol = "";
 
 	private String created;
 	private float daysLow;
@@ -33,7 +42,6 @@ public class Quote implements Serializable {
 	private float price;
 	private float daysHigh;
 	private String name;
-	private String symbol = "";
 	private float change;
 	private String percentageChange;
 	private float ask;
@@ -171,6 +179,7 @@ public class Quote implements Serializable {
 	}
 
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		return ReflectionToStringBuilder.toString(this,
+				ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 }
