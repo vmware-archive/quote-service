@@ -1,6 +1,6 @@
 spring:
   application:
-    name: quote-service
+    name: real-time-quote-service
     
 eureka:
   client:

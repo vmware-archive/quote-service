@@ -1,20 +1,18 @@
 spring:
   application:
-    name: quote-service
-    
-eureka:
-  instance:
-    hostName: localhost
-    nonSecurePort: 8080
-    metadataMap:
-      instanceId: ${spring.application.name}
+    name: live-quote-service
+
 ---
 spring:
     profiles: cloud
+
 eureka:
   client:
     serviceUrl:
       defaultZone: ${EUREKA_SERVER}
+    healthcheck:
+      enabled: true
+
   instance:
     hostName: ${vcap.application.uris[0]}
     nonSecurePort: 80
