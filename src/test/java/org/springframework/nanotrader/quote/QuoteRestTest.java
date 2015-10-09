@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,57 +32,36 @@ public class QuoteRestTest {
 
 	@Test
 	public void testFindBySymbol() {
-		ResponseEntity<Quote> qr = restTemplate.getForEntity(
-				BASE_URI + "/GOOG", Quote.class);
+		ResponseEntity<Quote> qr = restTemplate.getForEntity(BASE_URI
+				+ "/findBySymbol/GOOG", Quote.class);
 
 		assertNotNull("Should find a result.", qr);
 		Quote q = qr.getBody();
 		assertNotNull(q);
 		assertEquals("GOOG", q.getSymbol());
-		assertEquals("Google Inc.", q.getName());
+		assertEquals("Google Inc.", q.getCompanyname());
 	}
 
 	@Test
 	public void testMarketSummary() {
-		ResponseEntity<Map<String, Object>> mr = restTemplate.exchange(BASE_URI
+		ResponseEntity<MarketSummary> ms = restTemplate.exchange(BASE_URI
 				+ "/marketSummary", HttpMethod.GET, null,
-				new ParameterizedTypeReference<Map<String, Object>>() {
+				new ParameterizedTypeReference<MarketSummary>() {
 				});
 
-		assertNotNull("Should find a result.", mr);
-		Map<String, Object> m = mr.getBody();
-		assertNotNull(m);
-		assertEquals(5, m.size());
-		assertNotNull(m.get("average"));
-		assertNotNull(m.get("open"));
-		assertNotNull(m.get("volume"));
-		assertNotNull(m.get("change"));
-		assertNotNull(m.get("percentGain"));
+		assertNotNull("Should find a result.", ms);
 	}
 
 	@Test
 	public void testFindAll() {
-		ResponseEntity<List<Quote>> qr = restTemplate.exchange(BASE_URI + "/",
-				HttpMethod.GET, null,
+		ResponseEntity<List<Quote>> qr = restTemplate.exchange(BASE_URI
+				+ "/findAll", HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<Quote>>() {
 				});
 
 		assertNotNull("Should find a result.", qr);
 		List<Quote> m = qr.getBody();
 		assertNotNull(m);
-		assertEquals(3, m.size());
-	}
-
-	@Test
-	public void testSymbols() {
-		ResponseEntity<Set<String>> qr = restTemplate.exchange(BASE_URI
-				+ "/symbols", HttpMethod.GET, null,
-				new ParameterizedTypeReference<Set<String>>() {
-				});
-
-		assertNotNull("Should find a result.", qr);
-		Set<String> s = qr.getBody();
-		assertNotNull(s);
-		assertEquals(22, s.size());
+		assertEquals(22, m.size());
 	}
 }

@@ -12,7 +12,6 @@ eureka:
       defaultZone: ${EUREKA_SERVER}
     healthcheck:
       enabled: true
-
   instance:
     hostName: ${vcap.application.uris[0]}
     nonSecurePort: 80

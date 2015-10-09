@@ -1,5 +1,0 @@
-<dataset>
-  <Quote symbol="^GSPC" ask="1234.45" bid="2345.56" change="345.56" created="2/23/45" days_high="1456.78" days_low="1367.89" name="SP 500" open="1567.89" previous_close="1678.90" price="1789.01" volume="89012"/>
-  <Quote symbol="GOOG" ask="123.45" bid="234.56" change="34.56" created="1/23/45" days_high="456.78" days_low="367.89" name="Google Inc." open="567.89" previous_close="678.90" price="789.01" volume="890.12"/>
-  <Quote symbol="YHOO" ask="223.45" bid="334.56" change="44.56" created="3/23/45" days_high="556.78" days_low="667.89" name="Yahoo Inc." open="667.89" previous_close="778.90" price="889.01" volume="990.12"/>
-</dataset>

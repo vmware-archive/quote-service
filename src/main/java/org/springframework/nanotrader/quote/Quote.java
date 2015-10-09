@@ -17,6 +17,7 @@ package org.springframework.nanotrader.quote;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -24,97 +25,79 @@ import javax.persistence.Table;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 @Entity
 @Table(name = "QUOTE")
 public class Quote implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	private String symbol = "";
 
-	private String created;
-	private float daysLow;
+	private float low;
+
+	@Column(name = "opened")
 	private float open;
-	private float previousClose;
+
 	private int volume;
+
 	private float price;
-	private float daysHigh;
-	private String name;
+
+	private float high;
+
+	private String companyname;
+
+	@Column(name = "changed")
 	private float change;
-	private String percentageChange;
-	private float ask;
-	private float bid;
 
-	@Override
-	public int hashCode() {
-		return getSymbol().hashCode();
+	public float getLow() {
+		return low;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || !(o instanceof Quote)) {
-			return false;
-		}
-		return o.hashCode() == hashCode();
+	public void setLow(float low) {
+		this.low = low;
 	}
 
-	@JsonProperty("DaysLow")
-	public float getDaysLow() {
-		return daysLow;
-	}
-
-	public void setDaysLow(float f) {
-		this.daysLow = f;
-	}
-
-	@JsonProperty("Open")
 	public float getOpen() {
 		return open;
 	}
 
-	public void setOpen(float f) {
-		this.open = f;
+	public void setOpen1(float open) {
+		this.open = open;
 	}
 
-	@JsonProperty("Volume")
 	public int getVolume() {
 		return volume;
 	}
 
-	public void setVolume(int i) {
-		this.volume = i;
+	public void setVolume(int volume) {
+		this.volume = volume;
 	}
 
-	@JsonProperty("Price")
 	public float getPrice() {
 		return price;
 	}
 
-	public void setPrice(float f) {
-		this.price = f;
+	public void setPrice(float price) {
+		this.price = price;
 	}
 
-	@JsonProperty("DaysHigh")
-	public float getDaysHigh() {
-		return daysHigh;
+	public float getHigh() {
+		return high;
 	}
 
-	public void setDaysHigh(float f) {
-		this.daysHigh = f;
+	public void setHigh(float high) {
+		this.high = high;
 	}
 
-	@JsonProperty("Name")
-	public String getName() {
-		return name;
+	public String getCompanyname() {
+		return companyname;
 	}
 
-	public void setName(String s) {
-		this.name = s;
+	public void setCompanyname(String companyname) {
+		this.companyname = companyname;
 	}
 
-	@JsonProperty("Symbol")
 	public String getSymbol() {
 		return symbol;
 	}
@@ -125,57 +108,12 @@ public class Quote implements Serializable {
 		}
 	}
 
-	@JsonProperty("Change")
 	public float getChange() {
 		return change;
 	}
 
-	public void setChange(float f) {
-		this.change = f;
-	}
-
-	public String getCreated() {
-		return created;
-	}
-
-	public void setCreated(String s) {
-		this.created = s;
-	}
-
-	@JsonProperty("PreviousClose")
-	public float getPreviousClose() {
-		return previousClose;
-	}
-
-	public void setPreviousClose(float f) {
-		this.previousClose = f;
-	}
-
-	@JsonProperty("PercentageChange")
-	public String getPercentageChange() {
-		return percentageChange;
-	}
-
-	public void setPercentageChange(String s) {
-		this.percentageChange = s;
-	}
-
-	@JsonProperty("Ask")
-	public float getAsk() {
-		return ask;
-	}
-
-	public void setAsk(float f) {
-		this.ask = f;
-	}
-
-	@JsonProperty("Bid")
-	public float getBid() {
-		return bid;
-	}
-
-	public void setBid(float f) {
-		this.bid = f;
+	public void setChange1(float change) {
+		this.change = change;
 	}
 
 	public String toString() {
