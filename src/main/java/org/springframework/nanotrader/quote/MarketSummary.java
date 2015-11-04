@@ -10,7 +10,7 @@ public class MarketSummary implements Serializable {
 
 	private float average;
 	private float open;
-	private float volume;
+	private int volume;
 	private float change;
 	private float percentGain;
 
@@ -45,11 +45,11 @@ public class MarketSummary implements Serializable {
 		this.open = open;
 	}
 
-	public float getVolume() {
+	public int getVolume() {
 		return volume;
 	}
 
-	private void setVolume(float volume) {
+	private void setVolume(int volume) {
 		this.volume = volume;
 	}
 
