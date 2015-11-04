@@ -1,13 +1,7 @@
 spring:
   application:
-    name: quote-service
-    
-eureka:
-  instance:
-    hostName: localhost
-    nonSecurePort: 8080
-    metadataMap:
-      instanceId: ${spring.application.name}
+    name: live-quote-service
+
 ---
 spring:
     profiles: cloud
