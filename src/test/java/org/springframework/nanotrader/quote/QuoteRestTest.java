@@ -41,7 +41,7 @@ public class QuoteRestTest {
 		Quote q = qr.getBody();
 		assertNotNull(q);
 		assertEquals("GOOG", q.getSymbol());
-		assertEquals("Google Inc.", q.getName());
+		assertEquals("Alphabet Inc.", q.getName());
 	}
 
 	@Test

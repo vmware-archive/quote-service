@@ -38,7 +38,7 @@ public class QuoteControllerTest {
 		} catch (Throwable t) {
 			fail(t.getMessage());
 		}
-		assertEquals("Google Inc.", obj.getName());
+		assertEquals("Alphabet Inc.", obj.getName());
 		assertTrue(obj.getDaysHigh() > 0.0);
 		assertTrue(obj.getDaysLow() > 0);
 		assertTrue(obj.getOpen() > 0);
