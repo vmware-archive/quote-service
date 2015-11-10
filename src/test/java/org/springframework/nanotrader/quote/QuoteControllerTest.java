@@ -91,7 +91,7 @@ public class QuoteControllerTest {
 		assertEquals(3, q.size());
 		assertEquals("EA", q.get(0).getSymbol());
 		assertEquals("AMZN", q.get(1).getSymbol());
-		assertEquals("VRSN", q.get(2).getSymbol());
+		assertEquals("VMW", q.get(2).getSymbol());
 	}
 
 	@Test
