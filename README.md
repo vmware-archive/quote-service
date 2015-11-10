@@ -1,45 +1,36 @@
 # quote-service
 Quotes microservice refactored from the SpringTrader application, as described in Part 2 of the *Refactoring a Monolith into a Cloud-Native Application* blog series.
 
-This is a simple REST service that provides real-time-ish (15 minute delayed) market data. It  uses the public Yahoo Finance APIs. For more information on the underlying API, please refer to the documentation [here](https://developer.yahoo.com/yql).
+The version in this branch uses cloud connectors to bind to a mysql datasource using hibernate.
 
-Results are cached to improve response times, and due to the daily query limitations that Yahoo places on on its APIs. 
-
-Additionally, the universe of supported securities is limited to those listed in the symbols.json [file](https://github.com/cf-platform-eng/quote-service/blob/part2/src/main/resources/symbols.json). This is because of the way SpringTrader currently tracks market data. The existing service API needs a way to get "all quotes" in one call: not practical with a universe of thousands of securities.
-
-To get the source code, run the following from a clean directory:
+Per the manifest, create a mysql service:
 
 ```bash
-git clone git@github.com:cf-platform-eng/quote-service.git
-cd quote-service
-git checkout part2
+$ cf marketplace
+Getting services from marketplace in org foo / space bar as bazz...
+OK
+
+service     plans         description   
+MariaDB     MariaDB       some sort of mysql database   
+
+$ cf create-service MariaDB MariaDB testds
+$ mvn clean install
+$ cf push
 ```
 
-Build the service using the maven conventions (from the root directory of the project):
+Once it's running, try out some operations:
 
-```bash
-mvn clean install
-```
+<http://your.host.here/env>
 
-To run the service locally you can take advantage of the maven spring-boot plugin:
+<http://your.host.here/mappings>
 
-```bash
-mvn spring-boot:run
-```
+<http://your.host.here/trace>
 
-Once it's running locally, try out some operations:
+<http://your.host.here/quotes/AAPL>
 
-<http://localhost:8080/quotes/>
+<http://your.host.here/quotes/marketSummary>
 
-<http://localhost:8080/quotes/GOOG>
+<http://your.host.here/quotes/topGainers>
 
-<http://localhost:8080/quotes/marketSummary>
+<http://your.host.here/quotes/topLosers>
 
-<http://localhost:8080/quotes/topGainers>
-
-<http://localhost:8080/quotes/topLosers>
-
-<http://localhost:8080/quotes/symbols>
-
-
-To deploy to cloud foundry, edit the manifest.yml file to give the app a unique name, and then perform a cf push.
