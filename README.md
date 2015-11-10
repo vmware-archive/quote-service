@@ -3,7 +3,7 @@ Quotes microservice refactored from the SpringTrader application, as described i
 
 The version in this branch uses cloud connectors to bind to a mysql datasource using hibernate.
 
-Per the manifest, create a mysql service:
+To get things started:
 
 ```bash
 $ cf marketplace
