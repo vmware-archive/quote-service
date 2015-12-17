@@ -2,4 +2,4 @@
 
 cd source
 
-mvn package
+mvn -e package
