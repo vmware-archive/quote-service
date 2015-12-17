@@ -1,0 +1,39 @@
+---
+resources:
+- name: source
+  type: git
+  source:
+    uri: https://github.com/cf-platform-eng/quote-service
+    branch: master
+
+- name: dev-app
+  type: cf
+  source:
+    api: {{cf-api-url}}
+    username: {{cf-username}}
+    password: {{cf-password}}
+    organization: {{cf-org}}
+    space: {{cf-space}}
+    skip_cert_check: false
+
+jobs:
+- name: build-dev
+  serial: true
+  plan:
+  - get: source
+    trigger: true
+  - task: build
+    file: source/ci/build.yml
+  - put: dev-app
+    params:
+      manifest: source/manifest.yml
+      path: build/source/target/quote-service-1.0.0.jar
+
+- name: acceptance-tests-dev
+  serial: true
+  plan:
+  - get: source
+    passed: [build-dev]
+    trigger: true
+  - task: test
+    file: source/ci/test.yml

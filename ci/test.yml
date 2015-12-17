@@ -1,0 +1,13 @@
+---
+platform: linux
+
+image: docker:///canopycip/cip-cf-ci
+
+inputs:
+- name: source
+
+params:
+  CF_APPS_DOMAIN: cfapps.io
+
+run:
+  path: source/ci/test.sh
