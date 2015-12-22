@@ -13,7 +13,7 @@ to run the service locally you can take advantage of the maven spring-boot plugi
 mvn spring-boot:run
 ```
 
-once it's running locally, try out some operations:
+once it's running locally, try out these operations:
 
 <http://localhost:8080/quotes/GOOG>
 
