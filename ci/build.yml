@@ -1,7 +1,7 @@
 ---
 platform: linux
 
-image: docker:///maven#3.3
+image: docker:///maven#onbuild
 
 inputs:
 - name: source
