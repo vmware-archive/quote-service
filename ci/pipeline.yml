@@ -15,6 +15,7 @@ resources:
     organization: {{cf-org}}
     space: {{cf-space}}
     skip_cert_check: false
+    
 
 jobs:
 - name: build-dev
@@ -26,8 +27,9 @@ jobs:
     file: source/ci/build.yml
   - put: dev-app
     params:
-      manifest: source/manifest.yml
+      manifest: source/ci/manifest.yml
       path: build/source/target/quote-service-1.0.0.jar
+      current_app_name: dev-quote-service
 
 - name: acceptance-tests-dev
   serial: true
