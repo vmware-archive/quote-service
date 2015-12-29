@@ -29,7 +29,6 @@ jobs:
     params:
       manifest: source/ci/manifest.yml
       path: build/source/target/quote-service-1.0.0.jar
-      current_app_name: dev-quote-service
 
 - name: acceptance-tests-dev
   serial: true
