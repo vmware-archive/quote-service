@@ -3,6 +3,8 @@
 SOURCE_DIR=$1
 TARGET_DIR=$2
 
+
+
 #BIN_DIR="$( cd "${TILE_GEN_DIR}/bin" && pwd )"
 
 #TILE="${BIN_DIR}/tile"

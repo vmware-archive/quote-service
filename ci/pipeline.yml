@@ -46,37 +46,11 @@ resources:
     private_key: {{pcf-key}} 
     uri: git@github.com:cf-platform-eng/pipeline-resource-pool
 jobs:
-- name: build-tile
-  plan:
-  - aggregate:
-    - get: tile-generator-repo
-    - get: quote-tile-repo
-      trigger: true
-    - get: tile-history
-  - task: build-quote-tile
-    config:
-      platform: linux
-      image: docker:///maven
-      tag: 3.3.9-jdk-8-onbuild
-      run:
-        path: quote-tile-repo/ci/scripts/tile-build.sh
-        args:
-        - tile-generator-repo
-        - quote-tile-repo
-        - tile-history
-        - quote-tile
-      inputs:
-      - name: quote-tile-repo
-        path: /usr/src/app
-      outputs:
-      - name: quote-tile
-        path: /usr/src/app/target
-  - put: tile-history
-    params:
-      from: quote-tile/tile-history-.*\.yml
-  - put: quote-tile
-    params:
-      from: quote-tile/.*\.pivotal
+  - name: build-tile
+    plan:
+      - get: quote-tile-repo
+      - task: build
+      file: quote-tile-repo/ci/scripts/tile-build.yml
 - name: claim-pcf
   plan:
   - aggregate:
