@@ -1,4 +1,4 @@
-#!/bin/sh -e -x
+#!/bin/sh -e
 
 TILE_GEN_DIR=$1
 SOURCE_DIR=$2
