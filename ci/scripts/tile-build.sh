@@ -20,7 +20,7 @@ TARGET_DIR=$4
 #HISTORY="tile-history-${VERSION}.yml"
 
 cd ${SOURCE_DIR}
-RUN ["mvn", "package"]
+CMD ["mvn", "package"]
 cp ${SOURCE_DIR}/target/*.jar ${TARGET_DIR}
 
 
