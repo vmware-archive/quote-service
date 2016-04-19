@@ -56,7 +56,8 @@ jobs:
   - task: build-quote-tile
     config:
       platform: linux
-      image: docker:///guidowb/tile-pipeline
+      image: docker:///maven
+      tag: 3.3.9-jdk-8-onbuild
       run:
         path: quote-tile-repo/ci/scripts/tile-build.sh
         args:

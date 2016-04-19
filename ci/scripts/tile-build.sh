@@ -1,23 +1,23 @@
-#!/bin/sh -e
+#!/bin/sh -e -x
 
 TILE_GEN_DIR=$1
 SOURCE_DIR=$2
 HISTORY_DIR=$3
 TARGET_DIR=$4
 
-BIN_DIR="$( cd "${TILE_GEN_DIR}/bin" && pwd )"
+#BIN_DIR="$( cd "${TILE_GEN_DIR}/bin" && pwd )"
 
-TILE="${BIN_DIR}/tile"
+#TILE="${BIN_DIR}/tile"
 
-HISTORY=`ls ${HISTORY_DIR}/tile-history-*.yml`
-if [ -n "${HISTORY}" ]; then
-	cp ${HISTORY} ${SOURCE_DIR}/tile-history.yml
-fi
+#HISTORY=`ls ${HISTORY_DIR}/tile-history-*.yml`
+#if [ -n "${HISTORY}" ]; then
+#	cp ${HISTORY} ${SOURCE_DIR}/tile-history.yml
+#fi
 
-(cd ${SOURCE_DIR}; mvn package)
+#(cd ${SOURCE_DIR}; mvn package)
 
-VERSION=`grep '^version:' ${SOURCE_DIR}/tile-history.yml | sed 's/^version: //'`
-HISTORY="tile-history-${VERSION}.yml"
+#VERSION=`grep '^version:' ${SOURCE_DIR}/tile-history.yml | sed 's/^version: //'`
+#HISTORY="tile-history-${VERSION}.yml"
 
-cp ${SOURCE_DIR}/product/*.pivotal ${TARGET_DIR}
-cp ${SOURCE_DIR}/tile-history.yml ${TARGET_DIR}/tile-history-${VERSION}.yml
+cp ${SOURCE_DIR}/target/*.jar ${TARGET_DIR}
+#cp ${SOURCE_DIR}/tile-history.yml ${TARGET_DIR}/tile-history-${VERSION}.yml
