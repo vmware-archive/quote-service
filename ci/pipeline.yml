@@ -57,7 +57,7 @@ jobs:
     config:
       platform: linux
       image: docker:///maven
-      tag: 3.3.9-jdk-8-onbuild
+      tag: 3.3.9-jdk-8
       run:
         path: quote-tile-repo/ci/scripts/tile-build.sh
         args:

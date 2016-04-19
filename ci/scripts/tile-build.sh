@@ -19,5 +19,9 @@ TARGET_DIR=$4
 #VERSION=`grep '^version:' ${SOURCE_DIR}/tile-history.yml | sed 's/^version: //'`
 #HISTORY="tile-history-${VERSION}.yml"
 
+cd ${SOURCE_DIR}
+mvn package
 cp ${SOURCE_DIR}/target/*.jar ${TARGET_DIR}
+
+
 #cp ${SOURCE_DIR}/tile-history.yml ${TARGET_DIR}/tile-history-${VERSION}.yml
