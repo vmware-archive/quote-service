@@ -57,7 +57,7 @@ jobs:
     config:
       platform: linux
       image: docker:///maven
-      tag: 3.3.9-jdk-8
+      tag: 3.3.9-jdk-8-onbuild
       run:
         path: quote-tile-repo/ci/scripts/tile-build.sh
         args:
@@ -66,15 +66,11 @@ jobs:
         - tile-history
         - quote-tile
       inputs:
-      - name: tile-generator-repo
-        path: ""
       - name: quote-tile-repo
-        path: ""
-      - name: tile-history
-        path: ""
+        path: /usr/src/app
       outputs:
       - name: quote-tile
-        path: ""
+        path: /usr/src/app/target
   - put: tile-history
     params:
       from: quote-tile/tile-history-.*\.yml

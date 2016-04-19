@@ -1,9 +1,7 @@
 #!/bin/sh -e
 
-TILE_GEN_DIR=$1
-SOURCE_DIR=$2
-HISTORY_DIR=$3
-TARGET_DIR=$4
+SOURCE_DIR=$1
+TARGET_DIR=$2
 
 #BIN_DIR="$( cd "${TILE_GEN_DIR}/bin" && pwd )"
 
@@ -19,9 +17,9 @@ TARGET_DIR=$4
 #VERSION=`grep '^version:' ${SOURCE_DIR}/tile-history.yml | sed 's/^version: //'`
 #HISTORY="tile-history-${VERSION}.yml"
 
-cd ${SOURCE_DIR}
-CMD ["mvn", "package"]
-cp ${SOURCE_DIR}/target/*.jar ${TARGET_DIR}
+#cd ${SOURCE_DIR}
+#CMD ["mvn", "package"]
+#cp ${SOURCE_DIR}/target/*.jar ${TARGET_DIR}
 
 
 #cp ${SOURCE_DIR}/tile-history.yml ${TARGET_DIR}/tile-history-${VERSION}.yml
