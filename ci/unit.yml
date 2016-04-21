@@ -4,11 +4,11 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: ruby
-    tag: '2.1'
+    repository: maven
+    tag: '3.3.9-jdk-8'
 
 inputs:
 - name: my-product
 
 run:
-  path: my-product/ci/scripts/test.sh
+  path: my-product/ci/test.sh
