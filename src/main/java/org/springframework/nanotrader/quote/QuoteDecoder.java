@@ -49,6 +49,14 @@ public class QuoteDecoder extends GsonDecoder {
 		return NumberUtils.parseNumber(o.toString(), Float.class);
 	}
 
+	protected String getString(ReadContext ctx, String path) {
+		Object o = ctx.read(path);
+		if (o == null) {
+			return "";
+		}
+		return o.toString();
+	}
+
 	protected int getInt(ReadContext ctx, String path) {
 		Object o = ctx.read(path);
 		if (o == null) {
@@ -71,22 +79,21 @@ public class QuoteDecoder extends GsonDecoder {
 
 	private Quote quoteFromJson(ReadContext ctx) {
 		Quote q = new Quote();
-		q.setCreated(ctx.read("$.query.created").toString());
+		q.setCreated(getString(ctx, "$.query.created"));
 		q.setChange(getFloat(ctx, "$.query.results.quote.Change"));
 		String name = ctx.read("$.query.results.quote.Name");
 		if (name != null) {
 			q.setName(name);
 		}
 		q.setPreviousClose((getFloat(ctx, "$.query.results.quote.PreviousClose")));
-		q.setPercentageChange(ctx.read("$.query.results.quote.ChangeinPercent")
-				.toString());
+		q.setPercentageChange(getString(ctx, "$.query.results.quote.ChangeinPercent"));
 		q.setAsk((getFloat(ctx, "$.query.results.quote.Ask")));
 		q.setBid((getFloat(ctx, "$.query.results.quote.Bid")));
 		q.setDaysHigh(getFloat(ctx, "$.query.results.quote.DaysHigh"));
 		q.setDaysLow(getFloat(ctx, "$.query.results.quote.DaysLow"));
 		q.setOpen(getFloat(ctx, "$.query.results.quote.PreviousClose"));
 		q.setPrice(getFloat(ctx, "$.query.results.quote.LastTradePriceOnly"));
-		q.setSymbol(ctx.read("$.query.results.quote.Symbol").toString());
+		q.setSymbol(getString(ctx, "$.query.results.quote.Symbol"));
 		q.setVolume(getInt(ctx, "$.query.results.quote.Volume"));
 
 		return q;
@@ -98,7 +105,7 @@ public class QuoteDecoder extends GsonDecoder {
 		JSONArray qs = ctx.read("$.query.results.quote");
 		for (int i = 0; i < qs.size(); i++) {
 			Quote q = new Quote();
-			q.setCreated(ctx.read("$.query.created").toString());
+			q.setCreated(getString(ctx, "$.query.created"));
 			q.setChange(getFloat(ctx, "$.query.results.quote[" + i + "].Change"));
 			String name = ctx.read("$.query.results.quote[" + i + "].Name");
 			if (name != null) {
@@ -106,9 +113,7 @@ public class QuoteDecoder extends GsonDecoder {
 			}
 			q.setPreviousClose((getFloat(ctx, "$.query.results.quote[" + i
 					+ "].PreviousClose")));
-			q.setPercentageChange(ctx.read(
-					"$.query.results.quote[" + i + "].ChangeinPercent")
-					.toString());
+			q.setPercentageChange(getString(ctx, "$.query.results.quote[" + i + "].ChangeinPercent"));
 			q.setAsk((getFloat(ctx, "$.query.results.quote[" + i + "].Ask")));
 			q.setBid((getFloat(ctx, "$.query.results.quote[" + i + "].Bid")));
 			q.setDaysHigh(getFloat(ctx, "$.query.results.quote[" + i
@@ -119,8 +124,7 @@ public class QuoteDecoder extends GsonDecoder {
 					+ "].PreviousClose"));
 			q.setPrice(getFloat(ctx, "$.query.results.quote[" + i
 					+ "].LastTradePriceOnly"));
-			q.setSymbol(ctx.read("$.query.results.quote[" + i + "].Symbol")
-					.toString());
+			q.setSymbol(getString(ctx, "$.query.results.quote[" + i + "].Symbol"));
 			q.setVolume(getInt(ctx, "$.query.results.quote[" + i + "].Volume"));
 			quotes.add(q);
 		}
