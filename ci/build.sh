@@ -2,4 +2,4 @@
 
 cd source
 
-mvn -e package
+mvn -e install
