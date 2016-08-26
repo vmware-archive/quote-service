@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/sh -ex
 
 app_name=$(cat source/ci/manifest.yml | grep "name:" | awk '{print $NF}')
 
