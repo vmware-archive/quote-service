@@ -15,7 +15,6 @@ resources:
     organization: {{cf-org}}
     space: {{cf-space}}
     skip_cert_check: false
-    
 
 jobs:
 - name: build-dev
