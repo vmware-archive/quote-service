@@ -15,109 +15,108 @@
  */
 package org.springframework.nanotrader.quote;
 
-import java.io.Serializable;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "QUOTE")
-public class Quote implements Serializable {
+class Quote implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	private String symbol = "";
+    @Id
+    private String symbol = "";
 
-	private float low;
+    private float low;
 
-	@Column(name = "opened")
-	private float open;
+    @Column(name = "opened")
+    private float open;
 
-	private int volume;
+    private int volume;
 
-	private float price;
+    private float price;
 
-	private float high;
+    private float high;
 
-	private String companyname;
+    private String companyname;
 
-	@Column(name = "changed")
-	private float change;
+    @Column(name = "changed")
+    private float change;
 
-	public float getLow() {
-		return low;
-	}
+    public float getLow() {
+        return low;
+    }
 
-	public void setLow(float low) {
-		this.low = low;
-	}
+    public void setLow(float low) {
+        this.low = low;
+    }
 
-	public float getOpen() {
-		return open;
-	}
+    public float getOpen() {
+        return open;
+    }
 
-	public void setOpen1(float open) {
-		this.open = open;
-	}
+    public void setOpen1(float open) {
+        this.open = open;
+    }
 
-	public int getVolume() {
-		return volume;
-	}
+    public int getVolume() {
+        return volume;
+    }
 
-	public void setVolume(int volume) {
-		this.volume = volume;
-	}
+    public void setVolume(int volume) {
+        this.volume = volume;
+    }
 
-	public float getPrice() {
-		return price;
-	}
+    public float getPrice() {
+        return price;
+    }
 
-	public void setPrice(float price) {
-		this.price = price;
-	}
+    public void setPrice(float price) {
+        this.price = price;
+    }
 
-	public float getHigh() {
-		return high;
-	}
+    public float getHigh() {
+        return high;
+    }
 
-	public void setHigh(float high) {
-		this.high = high;
-	}
+    public void setHigh(float high) {
+        this.high = high;
+    }
 
-	public String getCompanyname() {
-		return companyname;
-	}
+    public String getCompanyname() {
+        return companyname;
+    }
 
-	public void setCompanyname(String companyname) {
-		this.companyname = companyname;
-	}
+    public void setCompanyname(String companyname) {
+        this.companyname = companyname;
+    }
 
-	public String getSymbol() {
-		return symbol;
-	}
+    public String getSymbol() {
+        return symbol;
+    }
 
-	public void setSymbol(String s) {
-		if (s != null) {
-			this.symbol = s;
-		}
-	}
+    public void setSymbol(String s) {
+        if (s != null) {
+            this.symbol = s;
+        }
+    }
 
-	public float getChange() {
-		return change;
-	}
+    public float getChange() {
+        return change;
+    }
 
-	public void setChange1(float change) {
-		this.change = change;
-	}
+    public void setChange1(float change) {
+        this.change = change;
+    }
 
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this,
-				ToStringStyle.SHORT_PREFIX_STYLE);
-	}
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this,
+                ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

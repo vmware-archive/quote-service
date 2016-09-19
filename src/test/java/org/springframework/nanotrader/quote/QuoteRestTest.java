@@ -1,10 +1,5 @@
 package org.springframework.nanotrader.quote;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,51 +12,56 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @WebIntegrationTest(value = "server.port=9876")
 @ActiveProfiles("test")
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { Application.class })
+@SpringApplicationConfiguration(classes = {Application.class})
 public class QuoteRestTest {
 
-	private static final String BASE_URI = "http://localhost:9876/quotes";
+    private static final String BASE_URI = "http://localhost:9876/quotes";
 
-	@Autowired
-	QuoteController quoteController;
+    @Autowired
+    private QuoteController quoteController;
 
-	TestRestTemplate restTemplate = new TestRestTemplate();
+    private TestRestTemplate restTemplate = new TestRestTemplate();
 
-	@Test
-	public void testFindBySymbol() {
-		ResponseEntity<Quote> qr = restTemplate.getForEntity(BASE_URI
-				+ "/findBySymbol/GOOG", Quote.class);
+    @Test
+    public void testFindBySymbol() {
+        ResponseEntity<Quote> qr = restTemplate.getForEntity(BASE_URI
+                + "/findBySymbol/GOOG", Quote.class);
 
-		assertNotNull("Should find a result.", qr);
-		Quote q = qr.getBody();
-		assertNotNull(q);
-		assertEquals("GOOG", q.getSymbol());
-		assertEquals("Google Inc.", q.getCompanyname());
-	}
+        assertNotNull("Should find a result.", qr);
+        Quote q = qr.getBody();
+        assertNotNull(q);
+        assertEquals("GOOG", q.getSymbol());
+        assertEquals("Google Inc.", q.getCompanyname());
+    }
 
-	@Test
-	public void testMarketSummary() {
-		ResponseEntity<MarketSummary> ms = restTemplate.exchange(BASE_URI
-				+ "/marketSummary", HttpMethod.GET, null,
-				new ParameterizedTypeReference<MarketSummary>() {
-				});
+    @Test
+    public void testMarketSummary() {
+        ResponseEntity<MarketSummary> ms = restTemplate.exchange(BASE_URI
+                        + "/marketSummary", HttpMethod.GET, null,
+                new ParameterizedTypeReference<MarketSummary>() {
+                });
 
-		assertNotNull("Should find a result.", ms);
-	}
+        assertNotNull("Should find a result.", ms);
+    }
 
-	@Test
-	public void testFindAll() {
-		ResponseEntity<List<Quote>> qr = restTemplate.exchange(BASE_URI
-				+ "/findAll", HttpMethod.GET, null,
-				new ParameterizedTypeReference<List<Quote>>() {
-				});
+    @Test
+    public void testFindAll() {
+        ResponseEntity<List<Quote>> qr = restTemplate.exchange(BASE_URI
+                        + "/findAll", HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Quote>>() {
+                });
 
-		assertNotNull("Should find a result.", qr);
-		List<Quote> m = qr.getBody();
-		assertNotNull(m);
-		assertEquals(22, m.size());
-	}
+        assertNotNull("Should find a result.", qr);
+        List<Quote> m = qr.getBody();
+        assertNotNull(m);
+        assertEquals(22, m.size());
+    }
 }

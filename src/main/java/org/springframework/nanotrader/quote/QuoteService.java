@@ -18,24 +18,24 @@ package org.springframework.nanotrader.quote;
 import java.util.List;
 import java.util.Set;
 
-public interface QuoteService {
+interface QuoteService {
 
-	long countAllQuotes();
+    long countAllQuotes();
 
-	void deleteQuote(Quote quote);
+    void deleteQuote(Quote quote);
 
-	List<Quote> findAllQuotes();
+    List<Quote> findAllQuotes();
 
-	List<Quote> topGainers();
+    List<Quote> topGainers();
 
-	List<Quote> topLosers();
+    List<Quote> topLosers();
 
-	List<Quote> findBySymbolIn(Set<String> symbols);
+    List<Quote> findBySymbolIn(Set<String> symbols);
 
-	Quote saveQuote(Quote quote);
+    Quote saveQuote(Quote quote);
 
-	Quote findBySymbol(String symbol);
+    Quote findBySymbol(String symbol);
 
-	MarketSummary marketSummary();
+    MarketSummary marketSummary();
 
 }
