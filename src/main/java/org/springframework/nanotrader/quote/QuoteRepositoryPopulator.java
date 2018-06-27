@@ -7,10 +7,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,25 +18,20 @@ public class QuoteRepositoryPopulator implements
         ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
-    QuoteRepository quoteRepository;
+    private QuoteRepository quoteRepository;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (quoteRepository != null && quoteRepository.count() == 0) {
-            populate(quoteRepository);
+            populate();
         }
     }
 
-    public void populate(QuoteRepository repository) {
+    public void populate() {
         try {
-            URI u = new ClassPathResource("quotes.json").getURI();
-            byte[] jsonData = Files.readAllBytes(Paths.get(u));
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            ArrayList<Quote> q = objectMapper.readValue(jsonData,
-                    new TypeReference<List<Quote>>() {
-                    });
-            repository.save(q);
+            String jsonData = StreamUtils.copyToString(new ClassPathResource("quotes.json").getInputStream(), Charset.defaultCharset());
+            ArrayList<Quote> q =  new ObjectMapper().readValue(jsonData, new TypeReference<List<Quote>>() {});
+            quoteRepository.save(q);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
