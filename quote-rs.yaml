@@ -25,7 +25,7 @@ spec:
         run: quote-service
     spec:
       containers:
-      - image: jaredgordon/quote-service:2.0.1
+      - image: jaredgordon/quote-service:2.0.2
         imagePullPolicy: IfNotPresent
         name: quote-service
         ports:

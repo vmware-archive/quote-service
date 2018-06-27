@@ -1,46 +1,40 @@
 # quote-service
-Quotes microservice refactored from the SpringTrader application, as described in Part 3 of the *Refactoring a Monolith into a Cloud-Native Application* blog series.
+Quotes microservice refactored from the SpringTrader application, turned into a kubernetes deployment.
 
-This version of the service is backed by a relational database, and responds in with [HATEOAS](https://spring.io/understanding/HATEOAS) formatted JSON. This version also registers itself with [Eureka](https://github.com/Netflix/eureka/wiki/Eureka-at-a-glance), the location of which is configurable via the [manifest.yml](https://github.com/cf-platform-eng/quote-service/blob/part3db/manifest.yml) file.
+This version of the service is backed by a relational database, and responds in with [HATEOAS](https://spring.io/understanding/HATEOAS) formatted JSON.
 
 To get the source code, run the following from a clean directory:
 
 ```bash
 git clone git@github.com:cf-platform-eng/quote-service.git
 cd quote-service
-git checkout part3db
+git checkout k8s
 ```
 
 Build the service using the maven conventions (from the root directory of the project):
 
 ```bash
-mvn clean install
+mvn clean install -DskipTests
 ```
 
-To run the service locally you can take advantage of the maven spring-boot plugin:
+Or, to run the tests, get postgres running locally in docker: 
+`docker run --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=pass1234 -d postgres`
 
-```bash
-mvn spring-boot:run
-```
+dockerize the app: `docker build -t <your docker repo>/quote-service:2.0.2 .` and push it `docker push <your docker repo>/quote-service`
 
-Once it's running locally, try out some operations:
+then, to get it running in k8s, you will need to first deploy postgres. Try [this](https://github.com/kubernetes/charts/tree/master/stable/postgresql)
+and then `kubectl apply -f quote-rs.yaml && kubectl apply -f quote-svc.yaml`
 
-<http://localhost:8080/quotes/>
+Once it's running, try out some operations:
 
-<http://localhost:8080/quotes/GOOG>
+<http://k8s-lb-host/quotes/>
 
-<http://localhost:8080/quotes/marketSummary>
+<http://k8s-lb-host/quotes/GOOG>
 
-<http://localhost:8080/quotes/topGainers>
+<http://k8s-lb-host/quotes/marketSummary>
 
-<http://localhost:8080/quotes/topLosers>
+<http://k8s-lb-host/quotes/topGainers>
 
-<http://localhost:8080/quotes/symbols>
+<http://k8s-lb-host/quotes/topLosers>
 
-To deploy to cloud foundry, edit the manifest.yml file to give the app a unique name and point it to your Eureka instance. 
-
-You will also need to create a datasource service using a command such as below:
-```bash
-cf create-service p-mysql 100mb quote-db
-```
-Then, perform a cf push.
+<http://k8s-lb-host/quotes/symbols>
