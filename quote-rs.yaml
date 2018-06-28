@@ -26,7 +26,11 @@ spec:
     spec:
       containers:
       - image: jaredgordon/quote-service:2.0.2
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: postgres-secret
+          mountPath: /etc/postgres-secret
+          readOnly: true
         name: quote-service
         ports:
         - containerPort: 8080
@@ -34,8 +38,28 @@ spec:
         resources: {}
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
       terminationGracePeriodSeconds: 30
+      volumes:
+      - name: postgres-secret
+        secret:
+          secretName: postgres-secret
+          items:
+          - key: username
+            path: username
+          - key: password
+            path: password
