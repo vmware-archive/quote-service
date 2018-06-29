@@ -1,75 +1,70 @@
 package org.springframework.nanotrader.quote;
 
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
+
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Component
 public class Symbols {
 
-	private Set<String> symbols;
+    private Set<String> symbols;
 
-	@Autowired
-	QuoteController quoteController;
+    @Autowired
+    private QuoteController quoteController;
 
-	public Set<String> getSymbols() {
-		if (symbols != null) {
-			return symbols;
-		}
+    Set<String> getSymbols() {
+        if (symbols != null) {
+            return symbols;
+        }
 
-		try {
-			URI u = new ClassPathResource("symbols.json").getURI();
-			byte[] jsonData = Files.readAllBytes(Paths.get(u));
+        try {
+            String jsonData = StreamUtils.copyToString(new ClassPathResource("symbols.json").getInputStream(), Charset.defaultCharset());
+            ObjectMapper objectMapper = new ObjectMapper();
+            ArrayList<Quote> quotes = objectMapper.readValue(jsonData, new TypeReference<List<Quote>>() {
+            });
 
-			ObjectMapper objectMapper = new ObjectMapper();
-			ArrayList<Quote> quotes = objectMapper.readValue(jsonData,
-					new TypeReference<List<Quote>>() {
-					});
+            symbols = new HashSet<>();
+            for (Quote quote : quotes) {
+                symbols.add(quote.getSymbol());
+            }
 
-			symbols = new HashSet<String>();
-			for (Quote quote : quotes) {
-				symbols.add(quote.getSymbol());
-			}
+            return symbols;
 
-			return symbols;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    boolean exists(String symbol) {
+        if (symbol == null) {
+            return false;
+        }
+        return getSymbols().contains(symbol);
+    }
 
-	public boolean exists(String symbol) {
-		if (symbol == null) {
-			return false;
-		}
-		return getSymbols().contains(symbol);
-	}
+    int count() {
+        return getSymbols().size();
+    }
 
-	public int count() {
-		return getSymbols().size();
-	}
-
-	public Set<String> checkSymbols(Set<String> symbols) {
-		Set<String> ret = new HashSet<String>();
-		if (symbols == null || symbols.size() < 1) {
-			return ret;
-		}
-		for (String s : symbols) {
-			if (exists(s)) {
-				ret.add(s);
-			}
-		}
-		return ret;
-	}
+    Set<String> checkSymbols(Set<String> symbols) {
+        Set<String> ret = new HashSet<>();
+        if (symbols == null || symbols.size() < 1) {
+            return ret;
+        }
+        for (String s : symbols) {
+            if (exists(s)) {
+                ret.add(s);
+            }
+        }
+        return ret;
+    }
 }
