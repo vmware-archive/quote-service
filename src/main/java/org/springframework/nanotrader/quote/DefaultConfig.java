@@ -2,7 +2,6 @@ package org.springframework.nanotrader.quote;
 
 import feign.Feign;
 import feign.Logger;
-import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -21,10 +20,10 @@ public class DefaultConfig {
         return createRepository("https://api.iextrading.com/1.0");
     }
 
-    public QuoteRepository createRepository(String url) {
+    private QuoteRepository createRepository(String url) {
         return Feign.builder()
                 .encoder(new GsonEncoder())
-                .decoder(new  QuoteDecoder())
+                .decoder(new QuoteDecoder())
                 .logger(new Logger.JavaLogger())
                 .logLevel(Logger.Level.FULL)
                 .target(QuoteRepository.class, url);

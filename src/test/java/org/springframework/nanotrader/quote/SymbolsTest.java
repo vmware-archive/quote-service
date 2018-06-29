@@ -35,7 +35,7 @@ public class SymbolsTest {
 
     @Test
     public void testCheckSymbols() {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         Set<String> s1 = symbols.checkSymbols(set);
         assertNotNull(s1);
         assertEquals(0, s1.size());

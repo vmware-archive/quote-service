@@ -12,15 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/quotes")
 public class QuoteController {
-
-    public static final String INDEX_SYMBOL = "IDX";
 
     @Autowired
     private QuoteRepository quoteRepository;
@@ -84,21 +81,20 @@ public class QuoteController {
     }
 
     private Quote getQuote(String symbol) {
-        return quoteRepository
-                .getQuote(symbol);
+        return quoteRepository.getQuote(symbol);
     }
 
     @RequestMapping("/topGainers")
     public List<Quote> topGainers() {
-        List<Quote> l = new ArrayList<Quote>(findAll());
-        Collections.sort(l, new DescendingChangeComparator());
+        List<Quote> l = new ArrayList<>(findAll());
+        l.sort(new DescendingChangeComparator());
         return l.subList(0, 3);
     }
 
     @RequestMapping("/topLosers")
     public List<Quote> topLosers() {
-        List<Quote> l = new ArrayList<Quote>(findAll());
-        Collections.sort(l, new AscendingChangeComparator());
+        List<Quote> l = new ArrayList<>(findAll());
+        l.sort(new AscendingChangeComparator());
         return l.subList(0, 3);
     }
 
@@ -130,7 +126,7 @@ public class QuoteController {
         }
 
         // otherwise cache has everything, just return cached values
-        List<Quote> l = new ArrayList<Quote>();
+        List<Quote> l = new ArrayList<>();
 
         @SuppressWarnings("rawtypes")
         List keys = cache.getKeys();

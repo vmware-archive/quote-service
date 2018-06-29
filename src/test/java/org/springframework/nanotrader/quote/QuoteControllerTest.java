@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -28,8 +27,7 @@ public class QuoteControllerTest {
         Quote obj = quoteController.findBySymbol("GOOG");
         assertNotNull("Should find a result.", obj);
 
-        // change can be positive, negative or zero, so just make sure nothing
-        // is thrown
+        // change can be positive, negative or zero, so just make sure nothing is thrown
         try {
             obj.getChange();
         } catch (Throwable t) {
@@ -93,11 +91,10 @@ public class QuoteControllerTest {
     @Test
     public void testDescComparator() {
         List<Quote> l = quoteController.findAll();
-        Collections.sort(l, new DescendingChangeComparator());
+        l.sort(new DescendingChangeComparator());
         float f = Float.MAX_VALUE;
         for (Quote q : l) {
-            assertTrue(f + " is greater than " + q.getChange(),
-                    f >= q.getChange());
+            assertTrue(f + " is greater than " + q.getChange(), f >= q.getChange());
             f = q.getChange();
         }
     }
@@ -105,7 +102,7 @@ public class QuoteControllerTest {
     @Test
     public void testAscComparator() {
         List<Quote> l = quoteController.findAll();
-        Collections.sort(l, new AscendingChangeComparator());
+        l.sort(new AscendingChangeComparator());
         float f = -Float.MAX_VALUE;
         for (Quote q : l) {
             assertTrue(f + " is less than " + q.getChange(), f <= q.getChange());
