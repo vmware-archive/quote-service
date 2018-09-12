@@ -2,14 +2,14 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    run: quote-service
-  name: quote-service
+    run: quote-service-db
+  name: quote-service-db
   namespace: default
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      run: quote-service
+      run: quote-service-db
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -18,10 +18,10 @@ spec:
   template:
     metadata:
       labels:
-        run: quote-service
+        run: quote-service-db
     spec:
       containers:
-      - image: jaredgordon/quote-service:2.0.2
+      - image: gcr.io/pgtm-gwestenberg/quote-service-db:latest
         imagePullPolicy: Always
         volumeMounts:
         - name: postgres-secret
