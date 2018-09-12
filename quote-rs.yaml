@@ -6,7 +6,7 @@ metadata:
   name: quote-service
   namespace: default
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       run: quote-service

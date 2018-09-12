@@ -31,7 +31,7 @@ public class QuoteRepositoryPopulator implements
         try {
             String jsonData = StreamUtils.copyToString(new ClassPathResource("quotes.json").getInputStream(), Charset.defaultCharset());
             ArrayList<Quote> q =  new ObjectMapper().readValue(jsonData, new TypeReference<List<Quote>>() {});
-            quoteRepository.save(q);
+            quoteRepository.saveAll(q);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
