@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: quote-service-rt
+  name: quote-service-rt
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    run: quote-service-rt
+  sessionAffinity: None
+  type: LoadBalancer
