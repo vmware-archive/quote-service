@@ -1,7 +1,7 @@
 ---
 applications:
 - name: sql-quote-service
-  memory: 512M
+  memory: 1G
   instances: 1
   buildpack: java_buildpack
   path: target/quote-service-1.1.0.jar
