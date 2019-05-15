@@ -1,31 +1,29 @@
 package org.springframework.nanotrader.quote;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-@WebIntegrationTest(value = "server.port=9876")
-@ActiveProfiles("test")
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { Application.class })
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class QuoteRestTest {
 
-	private static final String BASE_URI = "http://localhost:9876/quotes";
+	@LocalServerPort
+	private int port;
 
 	@Autowired
 	QuoteController quoteController;
@@ -35,18 +33,18 @@ public class QuoteRestTest {
 	@Test
 	public void testFindBySymbol() {
 		ResponseEntity<Quote> qr = restTemplate.getForEntity(
-				BASE_URI + "/GOOG", Quote.class);
+				getBaseUri() + "/PVTL", Quote.class);
 
 		assertNotNull("Should find a result.", qr);
 		Quote q = qr.getBody();
 		assertNotNull(q);
-		assertEquals("GOOG", q.getSymbol());
-		assertEquals("Alphabet Inc.", q.getName());
+		assertEquals("PVTL", q.getSymbol());
+		assertEquals("Pivotal Inc.", q.getName());
 	}
 
 	@Test
 	public void testMarketSummary() {
-		ResponseEntity<Map<String, Object>> mr = restTemplate.exchange(BASE_URI
+		ResponseEntity<Map<String, Object>> mr = restTemplate.exchange(getBaseUri()
 				+ "/marketSummary", HttpMethod.GET, null,
 				new ParameterizedTypeReference<Map<String, Object>>() {
 				});
@@ -64,7 +62,7 @@ public class QuoteRestTest {
 
 	@Test
 	public void testFindAll() {
-		ResponseEntity<List<Quote>> qr = restTemplate.exchange(BASE_URI + "/",
+		ResponseEntity<List<Quote>> qr = restTemplate.exchange(getBaseUri() + "/",
 				HttpMethod.GET, null,
 				new ParameterizedTypeReference<List<Quote>>() {
 				});
@@ -77,7 +75,7 @@ public class QuoteRestTest {
 
 	@Test
 	public void testSymbols() {
-		ResponseEntity<Set<String>> qr = restTemplate.exchange(BASE_URI
+		ResponseEntity<Set<String>> qr = restTemplate.exchange(getBaseUri()
 				+ "/symbols", HttpMethod.GET, null,
 				new ParameterizedTypeReference<Set<String>>() {
 				});
@@ -86,5 +84,9 @@ public class QuoteRestTest {
 		Set<String> s = qr.getBody();
 		assertNotNull(s);
 		assertEquals(22, s.size());
+	}
+
+	private String getBaseUri() {
+		return "http://localhost:" + port + "/quotes";
 	}
 }

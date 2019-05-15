@@ -13,9 +13,9 @@ import feign.RequestLine;
 @Repository
 public interface QuoteRepository {
 
-	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+	@RequestLine("GET stock/{query}/quote")
 	public Quote getQuote(@Param("query") String query);
 
-	@RequestLine("GET /yql?q={query}&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
-	List<Quote> getQuotes(@Param("query") String query);
+	@RequestLine("GET /stock/market/batch?symbols={query}&types=quote")
+	public List<Quote> getQuotes(@Param("query") String query);
 }

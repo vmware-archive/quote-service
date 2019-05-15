@@ -1,5 +1,6 @@
 package org.springframework.nanotrader.quote;
 
+import feign.Logger;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -17,12 +18,16 @@ public class DefaultConfig {
 
 	@Bean
 	public QuoteRepository quoteRepository() {
-		return createRepository("https://query.yahooapis.com/v1/public");
+		return createRepository("https://api.iextrading.com/1.0");
 	}
 
-	public QuoteRepository createRepository(String url) {
-		return Feign.builder().encoder(new GsonEncoder())
-				.decoder(new QuoteDecoder()).target(QuoteRepository.class, url);
+	private QuoteRepository createRepository(String url) {
+		return Feign.builder()
+				.encoder(new GsonEncoder())
+				.decoder(new QuoteDecoder())
+				.logger(new Logger.JavaLogger())
+				.logLevel(Logger.Level.FULL)
+				.target(QuoteRepository.class, url);
 	}
 
 	@Bean
