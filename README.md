@@ -1,3 +1,5 @@
+# quote-service is no longer actively maintained by VMware.
+
 # a quote-service
 A simple REST microservice example that provides real-time-ish (15 minute delayed) market data. It  uses the public Yahoo Finance APIs. For more information on the underlying API, please refer to the documentation [here](https://developer.yahoo.com/yql).
 
